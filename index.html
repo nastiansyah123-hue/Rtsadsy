@@ -277,6 +277,7 @@
           </div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-primary" onclick="syncSheets()" id="btn-sync">🔄 Tarik Data dari Sheets</button>
+            <button class="btn" style="background:#fef2f2;color:#991b1b;border-color:#fca5a5" onclick="askResetSync()">🗑️ Hapus Semua & Sync Ulang</button>
           </div>
           <div class="bulk-result" id="sheets-result"></div>
         </div>
@@ -332,6 +333,18 @@
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="closeModal('modal-del-selected')">Batal</button>
       <button class="btn btn-primary" style="background:#991b1b;border-color:#991b1b" onclick="confirmDeleteSelected()">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal reset & sync -->
+<div class="modal-bg" id="modal-reset-sync">
+  <div class="modal">
+    <h3>Hapus semua & sync ulang?</h3>
+    <p>Semua data di Supabase akan dihapus permanen, lalu data baru akan ditarik dari Google Sheets. Proses ini tidak bisa dibatalkan.</p>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('modal-reset-sync')">Batal</button>
+      <button class="btn btn-primary" style="background:#991b1b;border-color:#991b1b" onclick="confirmResetSync()">Hapus & Sync</button>
     </div>
   </div>
 </div>
@@ -553,6 +566,30 @@ async function syncSheets() {
   } finally {
     btn.textContent = '🔄 Tarik Data dari Sheets';
     btn.disabled = false;
+  }
+}
+
+function askResetSync() {
+  document.getElementById('modal-reset-sync').classList.add('open');
+}
+
+async function confirmResetSync() {
+  closeModal('modal-reset-sync');
+  const el = document.getElementById('sheets-result');
+  el.style.display = 'block';
+  el.className = 'bulk-result ok';
+  el.textContent = '🗑️ Menghapus semua data lama dari Supabase...';
+  try {
+    // Hapus semua data dengan filter id > 0
+    await sbFetch(`${TABLE}?id=gt.0`, { method: 'DELETE' });
+    data = []; render(); updateStats();
+    el.textContent = '✅ Data lama dihapus. Memulai sync dari Google Sheets...';
+    showToast('Data lama dihapus, memulai sync...');
+    // Langsung jalankan sync
+    await syncSheets();
+  } catch(e) {
+    el.className = 'bulk-result err';
+    el.textContent = 'Gagal menghapus data: ' + e.message;
   }
 }
 
