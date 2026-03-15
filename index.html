@@ -269,14 +269,20 @@
             Mengambil data dari <strong>Sheet: ALL</strong>, <strong>Kolom C</strong> (nomor customer), mulai baris 2.<br>
             Pastikan Google Sheets sudah di-set <strong>Anyone with the link — Viewer</strong>.
           </div>
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px">
             <div style="flex:1">
               <div style="font-size:12px;color:var(--text3);margin-bottom:4px">Sheet ID</div>
               <input type="text" id="sheet-id" value="15mdGnbEPdun2MyhBxugmBBxonZCra1REnwBUGDWWgqs" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);color:var(--text)" />
             </div>
+            <div style="width:100px">
+              <div style="font-size:12px;color:var(--text3);margin-bottom:4px">Mulai dari baris</div>
+              <input type="number" id="sync-offset" value="1" min="1" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);color:var(--text)" />
+            </div>
           </div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-primary" onclick="syncSheets()" id="btn-sync">🔄 Tarik Data dari Sheets</button>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Jika sync terputus di baris 38.000, isi "Mulai dari baris" dengan <strong>38001</strong> lalu klik Lanjutkan Sync.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="syncSheets(false)" id="btn-sync">🔄 Tarik Data dari Sheets</button>
+            <button class="btn" style="background:#eff6ff;color:#1e40af;border-color:#bfdbfe" onclick="syncSheets(true)" id="btn-resume">▶️ Lanjutkan Sync</button>
             <button class="btn" style="background:#fef2f2;color:#991b1b;border-color:#fca5a5" onclick="askResetSync()">🗑️ Hapus Semua & Sync Ulang</button>
           </div>
           <div class="bulk-result" id="sheets-result"></div>
@@ -376,6 +382,9 @@ function masuk() {
   document.getElementById('admin-view').style.display = currentRole === 'admin' ? 'block' : 'none';
   document.getElementById('cs-view').style.display = currentRole === 'cs' ? 'block' : 'none';
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  // Restore last sync offset if exists
+  const lastOffset = localStorage.getItem('sync_last_offset');
+  if (lastOffset) document.getElementById('sync-offset').value = lastOffset;
   loadData();
 }
 
@@ -484,30 +493,37 @@ async function addBulk() {
   } catch(e) { el.className = 'bulk-result err'; el.textContent = 'Gagal: ' + e.message; }
 }
 
-async function syncSheets() {
+async function syncSheets(resume = false) {
   const sheetId = document.getElementById('sheet-id').value.trim();
   if (!sheetId) { showToast('Sheet ID tidak boleh kosong!'); return; }
   const el = document.getElementById('sheets-result');
   const btn = document.getElementById('btn-sync');
+  const btnResume = document.getElementById('btn-resume');
   btn.disabled = true;
+  btnResume.disabled = true;
   el.style.display = 'block';
   el.className = 'bulk-result ok';
 
   const SHEET_NAME = 'ALL';
   const FETCH_BATCH = 500;
   const INSERT_BATCH = 100;
-  let offset = 1;
-  let page = 1;
+  const now = new Date().toLocaleDateString('id-ID');
+
+  // Tentukan offset awal
+  let startOffset = resume
+    ? (parseInt(document.getElementById('sync-offset').value) || 1)
+    : 1;
+
+  let offset = startOffset;
+  let page = Math.ceil(offset / FETCH_BATCH);
   let totalFetched = 0;
   let totalInserted = 0;
   let totalFailed = 0;
-  const now = new Date().toLocaleDateString('id-ID');
 
   try {
     while (true) {
-      // Ambil satu halaman dari Sheets
-      btn.textContent = `⏳ Halaman ${page} (${totalInserted.toLocaleString('id-ID')} tersimpan)`;
-      el.textContent = `📥 Mengambil halaman ${page}... sudah tersimpan: ${totalInserted.toLocaleString('id-ID')}`;
+      btn.textContent = `⏳ Baris ${offset.toLocaleString('id-ID')}... (${totalInserted.toLocaleString('id-ID')} tersimpan)`;
+      el.textContent = `📥 Mengambil dari baris ${offset.toLocaleString('id-ID')}... tersimpan: ${totalInserted.toLocaleString('id-ID')}`;
 
       const query = encodeURIComponent(`select C limit ${FETCH_BATCH} offset ${offset}`);
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${query}`;
@@ -517,7 +533,6 @@ async function syncSheets() {
       const rows = text.split('\n').slice(1).filter(r => r.trim().length > 0);
       if (!rows.length) break;
 
-      // Parse nomor dari halaman ini
       const numbers = [];
       rows.forEach(row => {
         const val = row.replace(/^"|"$/g, '').trim();
@@ -525,7 +540,6 @@ async function syncSheets() {
       });
       totalFetched += numbers.length;
 
-      // Langsung insert halaman ini ke Supabase batch kecil
       for (let i = 0; i < numbers.length; i += INSERT_BATCH) {
         const chunk = numbers.slice(i, i + INSERT_BATCH).map(no => ({
           nomor_customer: no,
@@ -534,26 +548,32 @@ async function syncSheets() {
         try {
           const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
           totalInserted += inserted.length;
-          // Tidak push ke data[] dulu agar tidak membebani memory
         } catch(e) {
           totalFailed += chunk.length;
         }
         await new Promise(r => setTimeout(r, 30));
       }
 
+      // Simpan progress — update input offset agar bisa dilanjutkan jika terputus
+      const nextOffset = offset + FETCH_BATCH;
+      document.getElementById('sync-offset').value = nextOffset;
+      localStorage.setItem('sync_last_offset', nextOffset);
+
       if (rows.length < FETCH_BATCH) break;
       offset += FETCH_BATCH;
       page++;
     }
 
-    // Setelah semua selesai, reload data dari Supabase
+    // Reset offset ke 1 setelah selesai penuh
+    document.getElementById('sync-offset').value = 1;
+    localStorage.removeItem('sync_last_offset');
+
     el.textContent = `🔄 Memuat ulang data dari Supabase...`;
-    btn.textContent = `🔄 Memuat ulang...`;
     await loadData();
 
     if (totalFailed > 0) {
       el.className = 'bulk-result warn';
-      el.textContent = `⚠️ ${totalInserted.toLocaleString('id-ID')} berhasil, ${totalFailed.toLocaleString('id-ID')} gagal dari total ${totalFetched.toLocaleString('id-ID')} baris.`;
+      el.textContent = `⚠️ ${totalInserted.toLocaleString('id-ID')} berhasil, ${totalFailed.toLocaleString('id-ID')} gagal. Klik "Lanjutkan Sync" untuk melanjutkan.`;
     } else {
       el.className = 'bulk-result ok';
       el.textContent = `✅ Selesai! ${totalInserted.toLocaleString('id-ID')} nomor berhasil disimpan dari ${totalFetched.toLocaleString('id-ID')} baris di Sheets.`;
@@ -561,11 +581,13 @@ async function syncSheets() {
     showToast(`${totalInserted.toLocaleString('id-ID')} data disimpan!`);
 
   } catch(e) {
-    el.className = 'bulk-result err';
-    el.textContent = `Gagal di halaman ${page}: ${e.message}`;
+    el.className = 'bulk-result warn';
+    el.textContent = `⚠️ Terhenti di baris ${offset.toLocaleString('id-ID')}: ${e.message}. Klik "Lanjutkan Sync" untuk melanjutkan dari baris ini.`;
+    document.getElementById('sync-offset').value = offset;
   } finally {
     btn.textContent = '🔄 Tarik Data dari Sheets';
     btn.disabled = false;
+    btnResume.disabled = false;
   }
 }
 
