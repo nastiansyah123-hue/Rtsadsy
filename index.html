@@ -493,15 +493,13 @@ async function syncSheets() {
       return;
     }
 
-    // Cek duplikat dengan data yang sudah ada di Supabase
-    const existing = new Set(data.map(d => d.no));
+    // Hanya skip duplikat dalam satu sesi sheet (baris yang sama persis di sheet)
     const toInsert = [];
     const seen = new Set();
     let skipped = 0;
     numbers.forEach(no => {
       if (seen.has(no)) { skipped++; return; }
       seen.add(no);
-      if (existing.has(no)) { skipped++; return; }
       toInsert.push({ nomor_customer: no, tanggal_ditambahkan: new Date().toLocaleDateString('id-ID') });
     });
 
@@ -515,7 +513,7 @@ async function syncSheets() {
     inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
     render(); updateStats();
     el.className = 'bulk-result ok';
-    el.textContent = `✅ ${toInsert.length} nomor baru berhasil disimpan dari Sheets! (${skipped} sudah ada/duplikat dilewati)`;
+    el.textContent = `✅ ${toInsert.length} nomor berhasil disimpan dari Sheets!${skipped > 0 ? ` (${skipped} baris kosong/duplikat dalam sheet dilewati)` : ''}`;
     showToast(`${toInsert.length} data dari Sheets ditambahkan!`);
   } catch(e) {
     el.className = 'bulk-result err';
