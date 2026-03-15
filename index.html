@@ -7,577 +7,295 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #f5f3ef;
-    --surface: #ffffff;
-    --surface2: #eeece8;
-    --border: #dddbd6;
-    --text: #1a1917;
-    --text2: #6b6960;
-    --text3: #9c9a93;
-    --accent: #c84b2f;
-    --accent-light: #fdf0ed;
-    --accent-mid: #f4c4b8;
-    --green: #2d6a4f;
-    --green-light: #e8f5ee;
-    --amber: #92400e;
-    --amber-light: #fef3c7;
-    --red: #991b1b;
-    --red-light: #fee2e2;
-    --radius: 10px;
-    --radius-sm: 6px;
+    --bg: #f5f3ef; --surface: #ffffff; --surface2: #eeece8; --border: #dddbd6;
+    --text: #1a1917; --text2: #6b6960; --text3: #9c9a93;
+    --accent: #c84b2f; --green: #2d6a4f; --green-light: #e8f5ee;
+    --amber: #92400e; --amber-light: #fef3c7; --red: #991b1b; --red-light: #fee2e2;
+    --blue: #1e40af; --blue-light: #eff6ff;
+    --radius: 10px; --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.04);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Sora', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  /* Header */
-  .top-bar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
-  .top-bar .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .top-bar .logo-dot {
-    width: 28px; height: 28px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: 'DM Mono', monospace;
-  }
-  .top-bar .date-info {
-    font-size: 12px;
-    color: var(--text3);
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* Layout */
-  .container {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-  }
-
-  /* Stats */
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 1.75rem;
-    animation: fadeUp 0.4s ease both;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.1rem 1.25rem;
-    box-shadow: var(--shadow);
-  }
-  .stat-card .s-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text3);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-  .stat-card .s-value {
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    line-height: 1;
-  }
-  .stat-card.accent-card {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .stat-card.accent-card .s-label { color: rgba(255,255,255,0.7); }
-  .stat-card.accent-card .s-value { color: #fff; }
-
-  /* Input section */
-  .input-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1.75rem;
-    box-shadow: var(--shadow);
-    animation: fadeUp 0.4s 0.1s ease both;
-  }
-  .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text3);
-    margin-bottom: 1rem;
-  }
-
-  /* Tabs */
-  .tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 1.1rem;
-    background: var(--surface2);
-    border-radius: var(--radius-sm);
-    padding: 3px;
-    width: fit-content;
-  }
-  .tab-btn {
-    padding: 6px 18px;
-    border: none;
-    background: transparent;
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text2);
-    cursor: pointer;
-    border-radius: calc(var(--radius-sm) - 2px);
-    transition: all 0.18s;
-  }
-  .tab-btn.active {
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: var(--shadow);
-  }
+  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+ 
+  /* ROLE PICKER */
+  .role-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .role-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 2rem; width: 100%; max-width: 420px; box-shadow: var(--shadow-md); text-align: center; }
+  .role-logo { width: 48px; height: 48px; background: var(--accent); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace; margin: 0 auto 1.25rem; }
+  .role-card h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .role-card p { font-size: 13px; color: var(--text2); margin-bottom: 2rem; }
+  .role-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  .role-btn { border: 2px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1rem; cursor: pointer; background: var(--surface); transition: all 0.18s; text-align: center; }
+  .role-btn:hover { border-color: var(--accent); background: #fdf0ed; }
+  .role-btn.selected { border-color: var(--accent); background: #fdf0ed; }
+  .role-btn .role-icon { font-size: 28px; margin-bottom: 8px; }
+  .role-btn .role-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .role-btn .role-desc { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .role-btn.selected .role-name { color: var(--accent); }
+  .btn-masuk { width: 100%; padding: 11px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-masuk:hover { background: #b03d23; }
+  .btn-masuk:disabled { background: var(--border); color: var(--text3); cursor: not-allowed; }
+ 
+  /* TOP BAR */
+  .top-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 50; }
+  .top-bar .logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .logo-dot { width: 28px; height: 28px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .top-right { display: flex; align-items: center; gap: 12px; }
+  .role-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; }
+  .role-badge.admin { background: #fdf0ed; color: var(--accent); border: 1px solid #f4c4b8; }
+  .role-badge.cs { background: var(--blue-light); color: var(--blue); border: 1px solid #bfdbfe; }
+  .btn-logout { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; font-family: 'Sora', sans-serif; transition: all 0.15s; }
+  .btn-logout:hover { background: var(--surface2); }
+  .date-info { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+ 
+  /* LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+ 
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.75rem; animation: fadeUp 0.4s ease both; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; box-shadow: var(--shadow); }
+  .s-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 6px; font-weight: 500; }
+  .s-value { font-size: 28px; font-weight: 600; font-family: 'DM Mono', monospace; line-height: 1; }
+  .stat-card.accent-card { background: var(--accent); border-color: var(--accent); }
+  .accent-card .s-label { color: rgba(255,255,255,0.7); }
+  .accent-card .s-value { color: #fff; }
+ 
+  /* CS VIEW */
+  .cs-view { animation: fadeUp 0.4s ease both; }
+  .cs-search-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); text-align: center; }
+  .cs-search-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .cs-search-card p { font-size: 13px; color: var(--text2); margin-bottom: 1.25rem; }
+  .cs-input-row { display: flex; gap: 8px; max-width: 480px; margin: 0 auto; }
+  .cs-input-row input { flex: 1; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Mono', monospace; font-size: 14px; background: var(--bg); color: var(--text); transition: border-color 0.15s; }
+  .cs-input-row input:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .cs-input-row input::placeholder { color: var(--text3); font-family: 'Sora', sans-serif; }
+  .btn-search { background: var(--accent); color: #fff; border: none; padding: 11px 20px; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .btn-search:hover { background: #b03d23; }
+  .cs-result { max-width: 480px; margin: 1.25rem auto 0; padding: 1rem 1.25rem; border-radius: var(--radius); font-size: 14px; display: none; text-align: left; }
+  .cs-result.found { display: block; background: var(--green-light); border: 1px solid #b7dfc9; color: var(--green); }
+  .cs-result.not-found { display: block; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+  .res-no { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .res-count { font-size: 13px; margin-top: 4px; }
+  .res-dates { font-size: 12px; margin-top: 6px; opacity: 0.8; }
+ 
+  /* ADMIN INPUT */
+  .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.75rem; box-shadow: var(--shadow); animation: fadeUp 0.4s 0.1s ease both; }
+  .section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 1rem; }
+  .tabs { display: flex; margin-bottom: 1.1rem; background: var(--surface2); border-radius: var(--radius-sm); padding: 3px; width: fit-content; }
+  .tab-btn { padding: 6px 18px; border: none; background: transparent; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-radius: calc(var(--radius-sm) - 2px); transition: all 0.18s; }
+  .tab-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-
-  /* Single input */
-  .single-row {
-    display: flex;
-    gap: 8px;
-  }
-  .single-row input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    background: var(--bg);
-    color: var(--text);
-    transition: border-color 0.15s;
-  }
+  .single-row { display: flex; gap: 8px; }
+  .single-row input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Mono', monospace; font-size: 14px; background: var(--bg); color: var(--text); transition: border-color 0.15s; }
   .single-row input:focus { outline: none; border-color: var(--accent); background: #fff; }
   .single-row input::placeholder { color: var(--text3); }
-
-  /* Bulk input */
-  textarea {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    background: var(--bg);
-    color: var(--text);
-    resize: vertical;
-    min-height: 120px;
-    line-height: 1.7;
-    transition: border-color 0.15s;
-  }
+  textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Mono', monospace; font-size: 13px; background: var(--bg); color: var(--text); resize: vertical; min-height: 120px; line-height: 1.7; transition: border-color 0.15s; }
   textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
   textarea::placeholder { color: var(--text3); }
-  .bulk-hint {
-    font-size: 12px;
-    color: var(--text3);
-    margin: 6px 0 10px;
-  }
+  .bulk-hint { font-size: 12px; color: var(--text3); margin: 6px 0 10px; }
   .bulk-actions { display: flex; gap: 8px; }
-
-  /* Buttons */
-  .btn {
-    padding: 9px 20px;
-    border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    transition: all 0.15s;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { background: #b03d23; border-color: #b03d23; }
-  .btn-secondary {
-    background: transparent;
-    color: var(--text2);
-  }
+ 
+  /* BUTTONS */
+  .btn { padding: 9px 20px; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: #b03d23; }
+  .btn-secondary { background: transparent; color: var(--text2); }
   .btn-secondary:hover { background: var(--surface2); }
-
-  /* Bulk result */
-  .bulk-result {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    display: none;
-  }
+  .btn-export { background: var(--green-light); color: var(--green); border-color: #b7dfc9; white-space: nowrap; }
+  .btn-export:hover { background: #d1ede0; }
+  .bulk-result { margin-top: 10px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; display: none; }
   .bulk-result.ok { display: block; background: var(--green-light); color: var(--green); }
   .bulk-result.warn { display: block; background: var(--amber-light); color: var(--amber); }
-
-  .btn-export {
-    background: var(--green-light);
-    color: var(--green);
-    border-color: #b7dfc9;
-    white-space: nowrap;
-  }
-  .btn-export:hover { background: #d1ede0; }
-  .btn-import {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
-    white-space: nowrap;
-    cursor: pointer;
-    padding: 9px 20px;
-    border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    border: 1px solid #bfdbfe;
-    transition: all 0.15s;
-    display: inline-block;
-  }
-  .btn-import:hover { background: #dbeafe; }
-  .import-result {
-    margin-top: 8px;
-    padding: 8px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    display: none;
-  }
-  .import-result.ok { display: block; background: var(--green-light); color: var(--green); }
-  .import-result.warn { display: block; background: var(--amber-light); color: var(--amber); }
-  .import-result.err { display: block; background: var(--red-light); color: var(--red); }
-  .toolbar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 1rem;
-    animation: fadeUp 0.4s 0.2s ease both;
-  }
-  .toolbar input {
-    flex: 1;
-    padding: 9px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    background: var(--surface);
-    color: var(--text);
-    transition: border-color 0.15s;
-  }
+  .bulk-result.err { display: block; background: var(--red-light); color: var(--red); }
+ 
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 8px; margin-bottom: 1rem; animation: fadeUp 0.4s 0.2s ease both; }
+  .toolbar input { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; background: var(--surface); color: var(--text); transition: border-color 0.15s; }
   .toolbar input:focus { outline: none; border-color: var(--accent); }
   .toolbar input::placeholder { color: var(--text3); }
-  .clear-btn {
-    padding: 9px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--red);
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s;
-  }
-  .clear-btn:hover { background: var(--red-light); border-color: #fca5a5; }
-
-  /* Table */
-  .table-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    animation: fadeUp 0.4s 0.25s ease both;
-  }
-  .table-header {
-    display: grid;
-    grid-template-columns: 32px 1fr 110px 90px 60px;
-    padding: 10px 16px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text3);
-  }
+ 
+  /* BULK DELETE BAR */
+  .bulk-del-bar { display: none; align-items: center; justify-content: space-between; background: var(--red-light); border: 1px solid #fca5a5; border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 10px; font-size: 13px; color: var(--red); }
+  .bulk-del-bar.show { display: flex; }
+  .bulk-del-bar button { background: var(--red); color: #fff; border: none; padding: 6px 14px; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; cursor: pointer; }
+  .bulk-del-bar button:hover { background: #7f1d1d; }
+ 
+  /* TABLE */
+  .table-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); animation: fadeUp 0.4s 0.25s ease both; }
+  .table-header { display: grid; grid-template-columns: 32px 1fr 110px 90px 60px; padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); }
   .table-body { max-height: 420px; overflow-y: auto; }
-  .table-row {
-    display: grid;
-    grid-template-columns: 32px 1fr 110px 90px 60px;
-    padding: 11px 16px;
-    border-bottom: 1px solid var(--border);
-    align-items: center;
-    font-size: 13px;
-    transition: background 0.12s;
-    animation: rowIn 0.2s ease both;
-  }
+  .table-row { display: grid; grid-template-columns: 32px 1fr 110px 90px 60px; padding: 11px 16px; border-bottom: 1px solid var(--border); align-items: center; font-size: 13px; transition: background 0.12s; animation: rowIn 0.2s ease both; }
   .table-row.selected { background: #fdf0ed; }
   .table-row:last-child { border-bottom: none; }
   .table-row:hover { background: #faf9f7; }
   .table-row.selected:hover { background: #fbe8e3; }
   input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
-  .bulk-del-bar {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--red-light);
-    border: 1px solid #fca5a5;
-    border-radius: var(--radius-sm);
-    padding: 8px 14px;
-    margin-bottom: 10px;
-    font-size: 13px;
-    color: var(--red);
-  }
-  .bulk-del-bar.show { display: flex; }
-  .bulk-del-bar button {
-    background: var(--red);
-    color: #fff;
-    border: none;
-    padding: 6px 14px;
-    border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .bulk-del-bar button:hover { background: #7f1d1d; }
-  .no-customer {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    font-family: 'DM Mono', monospace;
-  }
+  .no-customer { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; font-family: 'DM Mono', monospace; }
   .b-green { background: var(--green-light); color: var(--green); }
   .b-amber { background: var(--amber-light); color: var(--amber); }
   .b-red { background: var(--red-light); color: var(--red); }
-  .date-cell {
-    font-size: 12px;
-    color: var(--text3);
-    font-family: 'DM Mono', monospace;
-  }
-  .del-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text3);
-    font-size: 16px;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    transition: all 0.15s;
-    line-height: 1;
-  }
+  .date-cell { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .del-btn { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 4px 8px; border-radius: var(--radius-sm); transition: all 0.15s; line-height: 1; }
   .del-btn:hover { background: var(--red-light); color: var(--red); }
-  .empty-state {
-    padding: 3rem 2rem;
-    text-align: center;
-    color: var(--text3);
-  }
-  .empty-state .empty-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-    opacity: 0.5;
-  }
+  .empty-state { padding: 3rem 2rem; text-align: center; color: var(--text3); }
+  .empty-state .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
   .empty-state p { font-size: 14px; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: var(--text);
-    color: #fff;
-    padding: 9px 20px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-family: 'Sora', sans-serif;
-    z-index: 999;
-    opacity: 0;
-    transition: all 0.25s;
-    pointer-events: none;
-    white-space: nowrap;
-    box-shadow: var(--shadow-md);
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* Confirm modal */
-  .modal-bg {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(26,25,23,0.35);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
+ 
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(26,25,23,0.35); z-index: 100; align-items: center; justify-content: center; }
   .modal-bg.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    padding: 1.5rem;
-    width: 320px;
-    box-shadow: var(--shadow-md);
-  }
+  .modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.5rem; width: 320px; box-shadow: var(--shadow-md); }
   .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
   .modal p { font-size: 13px; color: var(--text2); margin-bottom: 1.25rem; }
   .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes rowIn {
-    from { opacity: 0; transform: translateX(-6px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  /* Scrollbar */
+ 
+  /* TOAST */
+  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--text); color: #fff; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 13px; z-index: 200; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap; box-shadow: var(--shadow-md); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+ 
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes rowIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
   .table-body::-webkit-scrollbar { width: 4px; }
   .table-body::-webkit-scrollbar-track { background: transparent; }
   .table-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
   @media (max-width: 600px) {
     .stats-row { grid-template-columns: 1fr 1fr; }
     .stats-row .stat-card:last-child { grid-column: span 2; }
-    .table-header, .table-row { grid-template-columns: 1fr 80px 40px; }
-    .table-header span:nth-child(3),
-    .table-row .date-cell { display: none; }
+    .table-header, .table-row { grid-template-columns: 32px 1fr 80px 40px; }
+    .table-header span:nth-child(3), .table-row .date-cell { display: none; }
     .container { padding: 1rem; }
     .top-bar { padding: 0 1rem; }
+    .date-info { display: none; }
   }
 </style>
 </head>
 <body>
-
-<div class="top-bar">
-  <div class="logo">
-    <div class="logo-dot">R</div>
-    Data Retur Customer
+ 
+<!-- ROLE PICKER -->
+<div class="role-screen" id="role-screen">
+  <div class="role-card">
+    <div class="role-logo">R</div>
+    <h2>Data Retur Customer</h2>
+    <p>Pilih role kamu untuk melanjutkan</p>
+    <div class="role-options">
+      <div class="role-btn" id="btn-admin" onclick="selectRole('admin')">
+        <div class="role-icon">🛠️</div>
+        <div class="role-name">Admin</div>
+        <div class="role-desc">Kelola semua data</div>
+      </div>
+      <div class="role-btn" id="btn-cs" onclick="selectRole('cs')">
+        <div class="role-icon">🎧</div>
+        <div class="role-name">CS</div>
+        <div class="role-desc">Cari nomor retur</div>
+      </div>
+    </div>
+    <button class="btn-masuk" id="btn-masuk" disabled onclick="masuk()">Masuk →</button>
   </div>
-  <div class="date-info" id="date-display"></div>
 </div>
-
-<div class="container">
-
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="s-label">Total Entri Retur</div>
-      <div class="s-value" id="stat-total">0</div>
+ 
+<!-- APP -->
+<div id="app" style="display:none">
+  <div class="top-bar">
+    <div class="logo">
+      <div class="logo-dot">R</div>
+      Data Retur Customer
     </div>
-    <div class="stat-card">
-      <div class="s-label">Customer Unik</div>
-      <div class="s-value" id="stat-unique">0</div>
-    </div>
-    <div class="stat-card accent-card">
-      <div class="s-label">Retur Berulang</div>
-      <div class="s-value" id="stat-repeat">0</div>
+    <div class="top-right">
+      <span class="date-info" id="date-display"></span>
+      <span class="role-badge" id="role-badge"></span>
+      <button class="btn-logout" onclick="logout()">Ganti Role</button>
     </div>
   </div>
-
-  <div class="input-section">
-    <div class="section-label">Tambah Data Retur</div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('single')">Satu Nomor</button>
-      <button class="tab-btn" onclick="switchTab('bulk')">Input Masal</button>
-    </div>
-
-    <div class="tab-panel active" id="panel-single">
-      <div class="single-row">
-        <input type="text" id="inp-single" placeholder="Masukkan nomor customer..." onkeydown="if(event.key==='Enter')addOne()" />
-        <button class="btn btn-primary" onclick="addOne()">+ Tambah</button>
+ 
+  <div class="container">
+ 
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="s-label">Total Entri Retur</div>
+        <div class="s-value" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Customer Unik</div>
+        <div class="s-value" id="stat-unique">0</div>
+      </div>
+      <div class="stat-card accent-card">
+        <div class="s-label">Retur Berulang</div>
+        <div class="s-value" id="stat-repeat">0</div>
       </div>
     </div>
-
-    <div class="tab-panel" id="panel-bulk">
-      <textarea id="inp-bulk" placeholder="Masukkan banyak nomor sekaligus, satu nomor per baris:&#10;CUST-001&#10;CUST-002&#10;CUST-003&#10;..."></textarea>
-      <p class="bulk-hint">Satu nomor per baris. Duplikat dalam satu sesi akan dilewati secara otomatis.</p>
-      <div class="bulk-actions">
-        <button class="btn btn-primary" onclick="addBulk()">Simpan Semua</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('inp-bulk').value='';document.getElementById('bulk-result').className='bulk-result'">Bersihkan</button>
-      </div>
-      <div class="bulk-result" id="bulk-result"></div>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <input type="text" id="search" placeholder="Cari nomor customer..." oninput="render()" />
-    <button class="btn btn-export" onclick="exportCSV()" title="Export ke file CSV">⬇ Export CSV</button>
-  </div>
-
-  <div class="import-result" id="import-result"></div>
-
-  <div class="bulk-del-bar" id="bulk-del-bar">
-    <span id="bulk-del-info">0 data dipilih</span>
-    <button onclick="askDeleteSelected()">Hapus yang Dipilih</button>
-  </div>
-
-  <div class="table-section">
-    <div class="table-header">
-      <span><input type="checkbox" id="chk-all" onclick="toggleSelectAll(this.checked)" title="Pilih semua" /></span>
-      <span>Nomor Customer</span>
-      <span>Tgl Ditambahkan</span>
-      <span>Retur ke-</span>
-      <span></span>
-    </div>
-    <div class="table-body" id="table-body">
-      <div class="empty-state">
-        <div class="empty-icon">📋</div>
-        <p>Belum ada data retur.<br>Tambahkan nomor customer di atas.</p>
+ 
+    <!-- CS VIEW -->
+    <div class="cs-view" id="cs-view" style="display:none">
+      <div class="cs-search-card">
+        <h3>Cek Nomor Customer RTS</h3>
+        <p>Masukkan nomor customer untuk mengecek apakah pernah melakukan retur</p>
+        <div class="cs-input-row">
+          <input type="text" id="cs-inp" placeholder="Masukkan nomor customer..." onkeydown="if(event.key==='Enter')csSearch()" />
+          <button class="btn-search" onclick="csSearch()">Cek</button>
+        </div>
+        <div class="cs-result" id="cs-result"></div>
       </div>
     </div>
+ 
+    <!-- ADMIN VIEW -->
+    <div id="admin-view" style="display:none">
+      <div class="input-section">
+        <div class="section-label">Tambah Data Retur</div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('single')">Satu Nomor</button>
+          <button class="tab-btn" onclick="switchTab('bulk')">Input Masal</button>
+        </div>
+        <div class="tab-panel active" id="panel-single">
+          <div class="single-row">
+            <input type="text" id="inp-single" placeholder="Masukkan nomor customer..." onkeydown="if(event.key==='Enter')addOne()" />
+            <button class="btn btn-primary" onclick="addOne()">+ Tambah</button>
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-bulk">
+          <textarea id="inp-bulk" placeholder="Masukkan banyak nomor sekaligus, satu nomor per baris:&#10;CUST-001&#10;CUST-002&#10;CUST-003&#10;..."></textarea>
+          <p class="bulk-hint">Satu nomor per baris. Duplikat dalam satu sesi akan dilewati otomatis.</p>
+          <div class="bulk-actions">
+            <button class="btn btn-primary" onclick="addBulk()">Simpan Semua</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('inp-bulk').value='';document.getElementById('bulk-result').className='bulk-result'">Bersihkan</button>
+          </div>
+          <div class="bulk-result" id="bulk-result"></div>
+        </div>
+      </div>
+ 
+      <div class="toolbar">
+        <input type="text" id="search" placeholder="Cari nomor customer..." oninput="render()" />
+        <button class="btn btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+ 
+      <div class="bulk-del-bar" id="bulk-del-bar">
+        <span id="bulk-del-info">0 data dipilih</span>
+        <button onclick="askDeleteSelected()">Hapus yang Dipilih</button>
+      </div>
+ 
+      <div class="table-section">
+        <div class="table-header">
+          <span><input type="checkbox" id="chk-all" onclick="toggleSelectAll(this.checked)" /></span>
+          <span>Nomor Customer</span>
+          <span>Tgl Ditambahkan</span>
+          <span>Retur ke-</span>
+          <span></span>
+        </div>
+        <div class="table-body" id="table-body">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <p>Belum ada data retur.<br>Tambahkan nomor customer di atas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
   </div>
-
 </div>
-
-<!-- Modal konfirmasi hapus satu -->
+ 
+<!-- Modal hapus satu -->
 <div class="modal-bg" id="modal-del">
   <div class="modal">
     <h3>Hapus data ini?</h3>
@@ -588,10 +306,8 @@
     </div>
   </div>
 </div>
-
-
-
-<!-- Modal konfirmasi hapus pilihan -->
+ 
+<!-- Modal hapus pilihan -->
 <div class="modal-bg" id="modal-del-selected">
   <div class="modal">
     <h3>Hapus data terpilih?</h3>
@@ -602,128 +318,135 @@
     </div>
   </div>
 </div>
-
+ 
+<div class="toast" id="toast"></div>
+ 
 <script>
 const SUPABASE_URL = 'https://xpmnhwqkivymxaopmfjk.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwbW5od3FraXZ5bXhhb3BtZmprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTc2MDEsImV4cCI6MjA4OTEzMzYwMX0.lLoCjX-vMpy1IpJ_T9Qm4J50fAfG5SUWanZjdrp1NGM';
 const TABLE = 'retur_customer';
-
-let data = [];
-let deleteId = null;
-
+ 
+let data = [], deleteId = null, selected = new Set(), currentRole = null;
+ 
+/* ── ROLE ── */
+function selectRole(role) {
+  currentRole = role;
+  document.getElementById('btn-admin').classList.toggle('selected', role === 'admin');
+  document.getElementById('btn-cs').classList.toggle('selected', role === 'cs');
+  document.getElementById('btn-masuk').disabled = false;
+}
+ 
+function masuk() {
+  if (!currentRole) return;
+  document.getElementById('role-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const badge = document.getElementById('role-badge');
+  badge.textContent = currentRole === 'admin' ? 'Admin' : 'CS';
+  badge.className = 'role-badge ' + currentRole;
+  document.getElementById('admin-view').style.display = currentRole === 'admin' ? 'block' : 'none';
+  document.getElementById('cs-view').style.display = currentRole === 'cs' ? 'block' : 'none';
+  document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  loadData();
+}
+ 
+function logout() {
+  currentRole = null; data = []; selected.clear();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('role-screen').style.display = 'flex';
+  document.getElementById('btn-admin').classList.remove('selected');
+  document.getElementById('btn-cs').classList.remove('selected');
+  document.getElementById('btn-masuk').disabled = true;
+  document.getElementById('cs-result').className = 'cs-result';
+  document.getElementById('cs-inp').value = '';
+}
+ 
+/* ── SUPABASE ── */
 async function sbFetch(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation',
-      ...options.headers
-    }
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...options.headers }
   });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
+  if (!res.ok) { const e = await res.text(); throw new Error(e); }
+  const t = await res.text();
+  return t ? JSON.parse(t) : [];
 }
-
-async function load() {
-  document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  setLoading(true);
+ 
+async function loadData() {
+  if (currentRole === 'admin') document.getElementById('table-body').innerHTML = '<div class="empty-state"><p>Memuat data...</p></div>';
   try {
     const rows = await sbFetch(`${TABLE}?order=id.desc`);
     data = rows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
-    render(); updateStats();
-  } catch(e) {
-    showToast('Gagal memuat data: ' + e.message);
-  } finally {
-    setLoading(false);
+    updateStats();
+    if (currentRole === 'admin') render();
+  } catch(e) { showToast('Gagal memuat data: ' + e.message); }
+}
+ 
+/* ── CS ── */
+function csSearch() {
+  const q = document.getElementById('cs-inp').value.trim();
+  const el = document.getElementById('cs-result');
+  if (!q) { el.className = 'cs-result'; return; }
+  const matches = data.filter(d => d.no.toLowerCase().includes(q.toLowerCase()));
+  if (!matches.length) {
+    el.className = 'cs-result not-found';
+    el.innerHTML = `<div class="res-no">${q}</div><div class="res-count">Nomor ini tidak ditemukan dalam data retur.</div>`;
+  } else {
+    const uniqueNos = [...new Set(matches.map(d => d.no))];
+    el.className = 'cs-result found';
+    el.innerHTML = uniqueNos.map(no => {
+      const entries = data.filter(d => d.no === no);
+      return `<div class="res-no">${no}</div>
+        <div class="res-count">⚠️ Pernah retur sebanyak <strong>${entries.length}x</strong></div>
+        <div class="res-dates">Tanggal: ${entries.map(d => d.date).join(' · ')}</div>`;
+    }).join('<hr style="border:none;border-top:1px solid rgba(45,106,79,0.2);margin:10px 0">');
   }
 }
-
-function setLoading(on) {
-  document.getElementById('table-body').innerHTML = on
-    ? '<div class="empty-state"><p>Memuat data...</p></div>'
-    : '';
-}
-
+ 
+/* ── ADMIN ── */
 function switchTab(t) {
   document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i===0&&t==='single')||(i===1&&t==='bulk')));
   document.getElementById('panel-single').classList.toggle('active', t==='single');
   document.getElementById('panel-bulk').classList.toggle('active', t==='bulk');
   document.getElementById('bulk-result').className = 'bulk-result';
 }
-
+ 
 async function addOne() {
   const val = document.getElementById('inp-single').value.trim();
   if (!val) { showToast('Masukkan nomor customer terlebih dahulu!'); return; }
   const now = new Date().toLocaleDateString('id-ID');
   try {
-    const rows = await sbFetch(TABLE, {
-      method: 'POST',
-      body: JSON.stringify({ nomor_customer: val, tanggal_ditambahkan: now })
-    });
+    const rows = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify({ nomor_customer: val, tanggal_ditambahkan: now }) });
     data.unshift({ id: rows[0].id, no: val, date: now });
     render(); updateStats();
     document.getElementById('inp-single').value = '';
     showToast('Berhasil ditambahkan!');
-  } catch(e) {
-    showToast('Gagal menyimpan: ' + e.message);
-  }
+  } catch(e) { showToast('Gagal menyimpan: ' + e.message); }
 }
-
+ 
 async function addBulk() {
   const raw = document.getElementById('inp-bulk').value;
   const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   if (!lines.length) { showToast('Tidak ada nomor yang dimasukkan!'); return; }
   const now = new Date().toLocaleDateString('id-ID');
-  const seen = new Set();
-  const toInsert = [];
-  let skipped = 0;
-  lines.forEach(no => {
-    if (seen.has(no)) { skipped++; return; }
-    seen.add(no);
-    toInsert.push({ nomor_customer: no, tanggal_ditambahkan: now });
-  });
+  const seen = new Set(), toInsert = []; let skipped = 0;
+  lines.forEach(no => { if (seen.has(no)) { skipped++; return; } seen.add(no); toInsert.push({ nomor_customer: no, tanggal_ditambahkan: now }); });
   const el = document.getElementById('bulk-result');
   try {
-    const rows = await sbFetch(TABLE, {
-      method: 'POST',
-      body: JSON.stringify(toInsert)
-    });
+    const rows = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(toInsert) });
     rows.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
     render(); updateStats();
     document.getElementById('inp-bulk').value = '';
-    if (skipped > 0) {
-      el.className = 'bulk-result warn';
-      el.textContent = `${toInsert.length} nomor berhasil ditambahkan, ${skipped} duplikat dilewati.`;
-    } else {
-      el.className = 'bulk-result ok';
-      el.textContent = `${toInsert.length} nomor berhasil ditambahkan!`;
-    }
+    el.className = skipped > 0 ? 'bulk-result warn' : 'bulk-result ok';
+    el.textContent = skipped > 0 ? `${toInsert.length} nomor ditambahkan, ${skipped} duplikat dilewati.` : `${toInsert.length} nomor berhasil ditambahkan!`;
     showToast(`${toInsert.length} nomor ditambahkan!`);
-  } catch(e) {
-    el.className = 'bulk-result err';
-    el.textContent = 'Gagal menyimpan: ' + e.message;
-  }
+  } catch(e) { el.className = 'bulk-result err'; el.textContent = 'Gagal: ' + e.message; }
 }
-
+ 
 function countNo(no) { return data.filter(d => d.no === no).length; }
-
-let selected = new Set();
-
+ 
 function updateBulkBar() {
-  const bar = document.getElementById('bulk-del-bar');
-  const info = document.getElementById('bulk-del-info');
-  if (selected.size > 0) {
-    bar.classList.add('show');
-    info.textContent = `${selected.size} data dipilih`;
-  } else {
-    bar.classList.remove('show');
-  }
+  document.getElementById('bulk-del-info').textContent = `${selected.size} data dipilih`;
+  document.getElementById('bulk-del-bar').classList.toggle('show', selected.size > 0);
   const chkAll = document.getElementById('chk-all');
   if (chkAll) {
     const q = document.getElementById('search').value.toLowerCase();
@@ -732,56 +455,33 @@ function updateBulkBar() {
     chkAll.indeterminate = filtered.some(d => selected.has(d.id)) && !chkAll.checked;
   }
 }
-
+ 
 function toggleSelectAll(checked) {
   const q = document.getElementById('search').value.toLowerCase();
-  const filtered = data.filter(d => d.no.toLowerCase().includes(q));
-  filtered.forEach(d => checked ? selected.add(d.id) : selected.delete(d.id));
+  data.filter(d => d.no.toLowerCase().includes(q)).forEach(d => checked ? selected.add(d.id) : selected.delete(d.id));
   render(); updateBulkBar();
 }
-
+ 
 function toggleRow(id, checked) {
   checked ? selected.add(id) : selected.delete(id);
   const row = document.querySelector(`.table-row[data-id="${id}"]`);
   if (row) row.classList.toggle('selected', checked);
   updateBulkBar();
 }
-
-function askDeleteSelected() {
-  if (!selected.size) return;
-  document.getElementById('modal-del-selected-info').textContent = `${selected.size} data akan dihapus permanen.`;
-  document.getElementById('modal-del-selected').classList.add('open');
-}
-
-async function confirmDeleteSelected() {
-  const ids = [...selected];
-  try {
-    await sbFetch(`${TABLE}?id=in.(${ids.join(',')})`, { method: 'DELETE' });
-    data = data.filter(d => !selected.has(d.id));
-    selected.clear();
-    render(); updateStats(); updateBulkBar();
-    closeModal('modal-del-selected');
-    showToast(`${ids.length} data berhasil dihapus!`);
-  } catch(e) {
-    showToast('Gagal menghapus: ' + e.message);
-    closeModal('modal-del-selected');
-  }
-}
-
+ 
 function render() {
   const q = document.getElementById('search').value.toLowerCase();
   const filtered = data.filter(d => d.no.toLowerCase().includes(q));
   const body = document.getElementById('table-body');
   if (!filtered.length) {
-    body.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>${q ? 'Tidak ada data yang cocok dengan pencarian.' : 'Belum ada data retur.<br>Tambahkan nomor customer di atas.'}</p></div>`;
+    body.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>${q ? 'Tidak ada data yang cocok.' : 'Belum ada data retur.<br>Tambahkan nomor customer di atas.'}</p></div>`;
     updateBulkBar(); return;
   }
   body.innerHTML = filtered.map(d => {
     const c = countNo(d.no);
     const bc = c >= 3 ? 'b-red' : c === 2 ? 'b-amber' : 'b-green';
-    const chk = selected.has(d.id) ? 'checked' : '';
-    return `<div class="table-row${selected.has(d.id) ? ' selected' : ''}" data-id="${d.id}">
-      <span><input type="checkbox" ${chk} onchange="toggleRow(${d.id}, this.checked)" /></span>
+    return `<div class="table-row${selected.has(d.id)?' selected':''}" data-id="${d.id}">
+      <span><input type="checkbox" ${selected.has(d.id)?'checked':''} onchange="toggleRow(${d.id},this.checked)" /></span>
       <span class="no-customer">${d.no}</span>
       <span class="date-cell">${d.date}</span>
       <span><span class="badge ${bc}">${c}x</span></span>
@@ -790,7 +490,7 @@ function render() {
   }).join('');
   updateBulkBar();
 }
-
+ 
 function updateStats() {
   document.getElementById('stat-total').textContent = data.length;
   const unique = new Set(data.map(d => d.no));
@@ -799,106 +499,46 @@ function updateStats() {
   unique.forEach(no => { if (countNo(no) > 1) repeat++; });
   document.getElementById('stat-repeat').textContent = repeat;
 }
-
-function askDelete(id) {
-  deleteId = id;
-  document.getElementById('modal-del').classList.add('open');
-}
+ 
+function askDelete(id) { deleteId = id; document.getElementById('modal-del').classList.add('open'); }
 async function confirmDelete() {
   try {
     await sbFetch(`${TABLE}?id=eq.${deleteId}`, { method: 'DELETE' });
-    data = data.filter(d => d.id !== deleteId);
-    render(); updateStats();
-    closeModal('modal-del');
-    showToast('Data dihapus.');
-  } catch(e) {
-    showToast('Gagal menghapus: ' + e.message);
-    closeModal('modal-del');
-  }
+    data = data.filter(d => d.id !== deleteId); selected.delete(deleteId);
+    render(); updateStats(); closeModal('modal-del'); showToast('Data dihapus.');
+  } catch(e) { showToast('Gagal: ' + e.message); closeModal('modal-del'); }
 }
-function askClearAll() {
-  if (!data.length) { showToast('Tidak ada data untuk dihapus.'); return; }
-  document.getElementById('modal-clear').classList.add('open');
+ 
+function askDeleteSelected() {
+  if (!selected.size) return;
+  document.getElementById('modal-del-selected-info').textContent = `${selected.size} data akan dihapus permanen.`;
+  document.getElementById('modal-del-selected').classList.add('open');
 }
-async function confirmClearAll() {
+async function confirmDeleteSelected() {
+  const ids = [...selected];
   try {
-    await sbFetch(`${TABLE}?id=gte.0`, { method: 'DELETE' });
-    data = [];
-    render(); updateStats();
-    closeModal('modal-clear');
-    showToast('Semua data telah dihapus.');
-  } catch(e) {
-    showToast('Gagal menghapus semua: ' + e.message);
-    closeModal('modal-clear');
-  }
+    await sbFetch(`${TABLE}?id=in.(${ids.join(',')})`, { method: 'DELETE' });
+    data = data.filter(d => !selected.has(d.id)); selected.clear();
+    render(); updateStats(); updateBulkBar();
+    closeModal('modal-del-selected'); showToast(`${ids.length} data berhasil dihapus!`);
+  } catch(e) { showToast('Gagal: ' + e.message); closeModal('modal-del-selected'); }
 }
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
+ 
+function exportCSV() {
+  if (!data.length) { showToast('Tidak ada data!'); return; }
+  const csv = ['Nomor Customer,Tanggal Ditambahkan', ...data.map(d => `"${d.no}","${d.date}"`)].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = `retur-customer-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click(); showToast(`${data.length} data di-export!`);
 }
-
+ 
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function showToast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2400);
 }
-
-function exportCSV() {
-  if (!data.length) { showToast('Tidak ada data untuk di-export!'); return; }
-  const header = 'Nomor Customer,Tanggal Ditambahkan';
-  const rows = data.map(d => `"${d.no}","${d.date}"`);
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `retur-customer-${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast(`${data.length} data berhasil di-export!`);
-}
-
-function importCSV(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async function(ev) {
-    const lines = ev.target.result.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    const el = document.getElementById('import-result');
-    if (lines.length <= 1) {
-      el.className = 'import-result err';
-      el.textContent = 'File CSV kosong atau tidak valid.';
-      return;
-    }
-    const now = new Date().toLocaleDateString('id-ID');
-    const toInsert = [];
-    lines.slice(1).forEach(line => {
-      const cols = line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
-      const no = cols[0];
-      if (!no) return;
-      toInsert.push({ nomor_customer: no, tanggal_ditambahkan: cols[1] || now });
-    });
-    try {
-      const rows = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(toInsert) });
-      rows.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
-      render(); updateStats();
-      el.className = 'import-result ok';
-      el.textContent = `${toInsert.length} data berhasil di-import!`;
-      showToast(`${toInsert.length} data di-import!`);
-    } catch(err) {
-      el.className = 'import-result err';
-      el.textContent = 'Gagal import: ' + err.message;
-    }
-  };
-  reader.onerror = () => {
-    document.getElementById('import-result').className = 'import-result err';
-    document.getElementById('import-result').textContent = 'Gagal membaca file.';
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-}
-
-load();
 </script>
 </body>
 </html>
