@@ -147,6 +147,7 @@
   .res-detail { font-size: 12px; margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
   .res-detail-label { color: inherit; opacity: 0.75; margin-right: 2px; }
   .res-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+  .res-tag-green { background: var(--green-light); color: var(--green); }
   .res-tag-blue { background: #dbeafe; color: #1e40af; }
   .res-tag-amber { background: var(--amber-light); color: var(--amber); }
 
@@ -569,7 +570,7 @@ async function csSearch() {
   el.innerHTML = '<div class="res-count">🔍 Mencari...</div>';
 
   try {
-    const rows = await sbFetch(`${TABLE}?nomor_customer=ilike.*${encodeURIComponent(q)}*&order=id.desc&select=nomor_customer,tanggal_ditambahkan,produk,ekspedisi`);
+    const rows = await sbFetch(`${TABLE}?nomor_customer=ilike.*${encodeURIComponent(q)}*&order=id.desc&select=nomor_customer,tanggal_ditambahkan,bulan,produk,ekspedisi`);
     if (!rows.length) {
       el.className = 'cs-result not-found';
       el.innerHTML = `<div class="res-no">${q}</div><div class="res-count">Nomor ini tidak ditemukan dalam data retur.</div>`;
@@ -579,11 +580,13 @@ async function csSearch() {
       el.innerHTML = uniqueNos.map(no => {
         const entries = rows.filter(r => r.nomor_customer === no);
 
-        // Kumpulkan produk unik
+        const bulanList = [...new Set(entries.map(r => r.bulan).filter(b => b && b.length > 0))];
         const produkList = [...new Set(entries.map(r => r.produk).filter(p => p && p.length > 0))];
-        // Kumpulkan ekspedisi unik
         const ekspedisiList = [...new Set(entries.map(r => r.ekspedisi).filter(e => e && e.length > 0))];
 
+        const bulanHTML = bulanList.length
+          ? `<div class="res-detail"><span class="res-detail-label">📅 Bulan RTS:</span> ${bulanList.map(b => `<span class="res-tag res-tag-green">${b}</span>`).join(' ')}</div>`
+          : '';
         const produkHTML = produkList.length
           ? `<div class="res-detail"><span class="res-detail-label">📦 Produk:</span> ${produkList.map(p => `<span class="res-tag res-tag-blue">${p}</span>`).join(' ')}</div>`
           : '';
@@ -594,7 +597,7 @@ async function csSearch() {
         return `<div class="res-no">${no}</div>
           <div class="res-count">⚠️ Pernah retur sebanyak <strong>${entries.length}x</strong></div>
           <div class="res-dates">Tanggal: ${entries.map(r => r.tanggal_ditambahkan).join(' · ')}</div>
-          ${produkHTML}${ekspedisiHTML}`;
+          ${bulanHTML}${produkHTML}${ekspedisiHTML}`;
       }).join('<hr style="border:none;border-top:1px solid rgba(45,106,79,0.2);margin:10px 0">');
     }
   } catch(e) {
@@ -677,8 +680,8 @@ async function syncSheets(resume = false) {
       btn.textContent = `⏳ Baris ${offset.toLocaleString('id-ID')}... (${totalInserted.toLocaleString('id-ID')} tersimpan)`;
       el.textContent = `📥 Mengambil dari baris ${offset.toLocaleString('id-ID')}... tersimpan: ${totalInserted.toLocaleString('id-ID')}`;
 
-      // Ambil kolom C (nomor), D (produk), H (ekspedisi)
-      const query = encodeURIComponent(`select C,D,H limit ${FETCH_BATCH} offset ${offset}`);
+      // Ambil kolom A (bulan), C (nomor), D (produk), H (ekspedisi)
+      const query = encodeURIComponent(`select A,C,D,H limit ${FETCH_BATCH} offset ${offset}`);
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${query}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Sheet tidak bisa diakses. Pastikan sudah public.');
@@ -688,13 +691,13 @@ async function syncSheets(resume = false) {
 
       const records = [];
       rows.forEach(row => {
-        // Parse CSV dengan benar (handle koma dalam quotes)
         const cols = row.match(/(".*?"|[^,]+)(?=,|$)/g) || row.split(',');
         const clean = cols.map(c => c ? c.replace(/^"|"$/g, '').trim() : '');
-        const nomor = clean[0] || '';
-        const produk = clean[1] || '';
-        const ekspedisi = clean[2] || '';
-        if (nomor) records.push({ nomor_customer: nomor, produk, ekspedisi, tanggal_ditambahkan: now });
+        const bulan = clean[0] || '';
+        const nomor = clean[1] || '';
+        const produk = clean[2] || '';
+        const ekspedisi = clean[3] || '';
+        if (nomor) records.push({ bulan, nomor_customer: nomor, produk, ekspedisi, tanggal_ditambahkan: now });
       });
       totalFetched += records.length;
 
