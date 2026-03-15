@@ -18,7 +18,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
- 
+
   /* ROLE PICKER */
   .role-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
   .role-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 2rem; width: 100%; max-width: 420px; box-shadow: var(--shadow-md); text-align: center; }
@@ -36,7 +36,7 @@
   .btn-masuk { width: 100%; padding: 11px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
   .btn-masuk:hover { background: #b03d23; }
   .btn-masuk:disabled { background: var(--border); color: var(--text3); cursor: not-allowed; }
- 
+
   /* TOP BAR */
   .top-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 50; }
   .top-bar .logo { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
@@ -48,10 +48,10 @@
   .btn-logout { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; font-family: 'Sora', sans-serif; transition: all 0.15s; }
   .btn-logout:hover { background: var(--surface2); }
   .date-info { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
- 
+
   /* LAYOUT */
   .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
- 
+
   /* STATS */
   .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.75rem; animation: fadeUp 0.4s ease both; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; box-shadow: var(--shadow); }
@@ -60,7 +60,7 @@
   .stat-card.accent-card { background: var(--accent); border-color: var(--accent); }
   .accent-card .s-label { color: rgba(255,255,255,0.7); }
   .accent-card .s-value { color: #fff; }
- 
+
   /* CS VIEW */
   .cs-view { animation: fadeUp 0.4s ease both; }
   .cs-search-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); text-align: center; }
@@ -78,7 +78,7 @@
   .res-no { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 600; margin-bottom: 4px; }
   .res-count { font-size: 13px; margin-top: 4px; }
   .res-dates { font-size: 12px; margin-top: 6px; opacity: 0.8; }
- 
+
   /* ADMIN INPUT */
   .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.75rem; box-shadow: var(--shadow); animation: fadeUp 0.4s 0.1s ease both; }
   .section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 1rem; }
@@ -96,7 +96,7 @@
   textarea::placeholder { color: var(--text3); }
   .bulk-hint { font-size: 12px; color: var(--text3); margin: 6px 0 10px; }
   .bulk-actions { display: flex; gap: 8px; }
- 
+
   /* BUTTONS */
   .btn { padding: 9px 20px; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; }
   .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -109,19 +109,19 @@
   .bulk-result.ok { display: block; background: var(--green-light); color: var(--green); }
   .bulk-result.warn { display: block; background: var(--amber-light); color: var(--amber); }
   .bulk-result.err { display: block; background: var(--red-light); color: var(--red); }
- 
+
   /* TOOLBAR */
   .toolbar { display: flex; gap: 8px; margin-bottom: 1rem; animation: fadeUp 0.4s 0.2s ease both; }
   .toolbar input { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; background: var(--surface); color: var(--text); transition: border-color 0.15s; }
   .toolbar input:focus { outline: none; border-color: var(--accent); }
   .toolbar input::placeholder { color: var(--text3); }
- 
+
   /* BULK DELETE BAR */
   .bulk-del-bar { display: none; align-items: center; justify-content: space-between; background: var(--red-light); border: 1px solid #fca5a5; border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 10px; font-size: 13px; color: var(--red); }
   .bulk-del-bar.show { display: flex; }
   .bulk-del-bar button { background: var(--red); color: #fff; border: none; padding: 6px 14px; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; cursor: pointer; }
   .bulk-del-bar button:hover { background: #7f1d1d; }
- 
+
   /* TABLE */
   .table-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); animation: fadeUp 0.4s 0.25s ease both; }
   .table-header { display: grid; grid-template-columns: 32px 1fr 110px 90px 60px; padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); }
@@ -143,7 +143,7 @@
   .empty-state { padding: 3rem 2rem; text-align: center; color: var(--text3); }
   .empty-state .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
   .empty-state p { font-size: 14px; }
- 
+
   /* MODAL */
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(26,25,23,0.35); z-index: 100; align-items: center; justify-content: center; }
   .modal-bg.open { display: flex; }
@@ -151,11 +151,11 @@
   .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
   .modal p { font-size: 13px; color: var(--text2); margin-bottom: 1.25rem; }
   .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
- 
+
   /* TOAST */
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--text); color: #fff; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 13px; z-index: 200; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap; box-shadow: var(--shadow-md); }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
- 
+
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes rowIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
   .table-body::-webkit-scrollbar { width: 4px; }
@@ -173,7 +173,7 @@
 </style>
 </head>
 <body>
- 
+
 <!-- ROLE PICKER -->
 <div class="role-screen" id="role-screen">
   <div class="role-card">
@@ -195,7 +195,7 @@
     <button class="btn-masuk" id="btn-masuk" disabled onclick="masuk()">Masuk →</button>
   </div>
 </div>
- 
+
 <!-- APP -->
 <div id="app" style="display:none">
   <div class="top-bar">
@@ -209,9 +209,9 @@
       <button class="btn-logout" onclick="logout()">Ganti Role</button>
     </div>
   </div>
- 
+
   <div class="container">
- 
+
     <div class="stats-row">
       <div class="stat-card">
         <div class="s-label">Total Entri Retur</div>
@@ -226,7 +226,7 @@
         <div class="s-value" id="stat-repeat">0</div>
       </div>
     </div>
- 
+
     <!-- CS VIEW -->
     <div class="cs-view" id="cs-view" style="display:none">
       <div class="cs-search-card">
@@ -239,7 +239,7 @@
         <div class="cs-result" id="cs-result"></div>
       </div>
     </div>
- 
+
     <!-- ADMIN VIEW -->
     <div id="admin-view" style="display:none">
       <div class="input-section">
@@ -247,6 +247,7 @@
         <div class="tabs">
           <button class="tab-btn active" onclick="switchTab('single')">Satu Nomor</button>
           <button class="tab-btn" onclick="switchTab('bulk')">Input Masal</button>
+          <button class="tab-btn" onclick="switchTab('sheets')">📊 Sync Google Sheets</button>
         </div>
         <div class="tab-panel active" id="panel-single">
           <div class="single-row">
@@ -263,18 +264,34 @@
           </div>
           <div class="bulk-result" id="bulk-result"></div>
         </div>
+        <div class="tab-panel" id="panel-sheets">
+          <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.6">
+            Mengambil data dari <strong>Sheet: ALL</strong>, <strong>Kolom C</strong> (nomor customer), mulai baris 2.<br>
+            Pastikan Google Sheets sudah di-set <strong>Anyone with the link — Viewer</strong>.
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+            <div style="flex:1">
+              <div style="font-size:12px;color:var(--text3);margin-bottom:4px">Sheet ID</div>
+              <input type="text" id="sheet-id" value="15mdGnbEPdun2MyhBxugmBBxonZCra1REnwBUGDWWgqs" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);color:var(--text)" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="syncSheets()" id="btn-sync">🔄 Tarik Data dari Sheets</button>
+          </div>
+          <div class="bulk-result" id="sheets-result"></div>
+        </div>
       </div>
- 
+
       <div class="toolbar">
         <input type="text" id="search" placeholder="Cari nomor customer..." oninput="render()" />
         <button class="btn btn-export" onclick="exportCSV()">⬇ Export CSV</button>
       </div>
- 
+
       <div class="bulk-del-bar" id="bulk-del-bar">
         <span id="bulk-del-info">0 data dipilih</span>
         <button onclick="askDeleteSelected()">Hapus yang Dipilih</button>
       </div>
- 
+
       <div class="table-section">
         <div class="table-header">
           <span><input type="checkbox" id="chk-all" onclick="toggleSelectAll(this.checked)" /></span>
@@ -291,10 +308,10 @@
         </div>
       </div>
     </div>
- 
+
   </div>
 </div>
- 
+
 <!-- Modal hapus satu -->
 <div class="modal-bg" id="modal-del">
   <div class="modal">
@@ -306,7 +323,7 @@
     </div>
   </div>
 </div>
- 
+
 <!-- Modal hapus pilihan -->
 <div class="modal-bg" id="modal-del-selected">
   <div class="modal">
@@ -318,16 +335,16 @@
     </div>
   </div>
 </div>
- 
+
 <div class="toast" id="toast"></div>
- 
+
 <script>
 const SUPABASE_URL = 'https://xpmnhwqkivymxaopmfjk.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwbW5od3FraXZ5bXhhb3BtZmprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTc2MDEsImV4cCI6MjA4OTEzMzYwMX0.lLoCjX-vMpy1IpJ_T9Qm4J50fAfG5SUWanZjdrp1NGM';
 const TABLE = 'retur_customer';
- 
+
 let data = [], deleteId = null, selected = new Set(), currentRole = null;
- 
+
 /* ── ROLE ── */
 function selectRole(role) {
   currentRole = role;
@@ -335,7 +352,7 @@ function selectRole(role) {
   document.getElementById('btn-cs').classList.toggle('selected', role === 'cs');
   document.getElementById('btn-masuk').disabled = false;
 }
- 
+
 function masuk() {
   if (!currentRole) return;
   document.getElementById('role-screen').style.display = 'none';
@@ -348,7 +365,7 @@ function masuk() {
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   loadData();
 }
- 
+
 function logout() {
   currentRole = null; data = []; selected.clear();
   document.getElementById('app').style.display = 'none';
@@ -359,7 +376,7 @@ function logout() {
   document.getElementById('cs-result').className = 'cs-result';
   document.getElementById('cs-inp').value = '';
 }
- 
+
 /* ── SUPABASE ── */
 async function sbFetch(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -370,7 +387,7 @@ async function sbFetch(path, options = {}) {
   const t = await res.text();
   return t ? JSON.parse(t) : [];
 }
- 
+
 async function loadData() {
   if (currentRole === 'admin') document.getElementById('table-body').innerHTML = '<div class="empty-state"><p>Memuat data...</p></div>';
   try {
@@ -380,7 +397,7 @@ async function loadData() {
     if (currentRole === 'admin') render();
   } catch(e) { showToast('Gagal memuat data: ' + e.message); }
 }
- 
+
 /* ── CS ── */
 function csSearch() {
   const q = document.getElementById('cs-inp').value.trim();
@@ -401,15 +418,17 @@ function csSearch() {
     }).join('<hr style="border:none;border-top:1px solid rgba(45,106,79,0.2);margin:10px 0">');
   }
 }
- 
+
 /* ── ADMIN ── */
 function switchTab(t) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i===0&&t==='single')||(i===1&&t==='bulk')));
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active',
+    (i===0&&t==='single')||(i===1&&t==='bulk')||(i===2&&t==='sheets')));
   document.getElementById('panel-single').classList.toggle('active', t==='single');
   document.getElementById('panel-bulk').classList.toggle('active', t==='bulk');
-  document.getElementById('bulk-result').className = 'bulk-result';
+  document.getElementById('panel-sheets').classList.toggle('active', t==='sheets');
+  if (t !== 'bulk') document.getElementById('bulk-result').className = 'bulk-result';
 }
- 
+
 async function addOne() {
   const val = document.getElementById('inp-single').value.trim();
   if (!val) { showToast('Masukkan nomor customer terlebih dahulu!'); return; }
@@ -422,7 +441,7 @@ async function addOne() {
     showToast('Berhasil ditambahkan!');
   } catch(e) { showToast('Gagal menyimpan: ' + e.message); }
 }
- 
+
 async function addBulk() {
   const raw = document.getElementById('inp-bulk').value;
   const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -441,9 +460,74 @@ async function addBulk() {
     showToast(`${toInsert.length} nomor ditambahkan!`);
   } catch(e) { el.className = 'bulk-result err'; el.textContent = 'Gagal: ' + e.message; }
 }
- 
+
+async function syncSheets() {
+  const sheetId = document.getElementById('sheet-id').value.trim();
+  if (!sheetId) { showToast('Sheet ID tidak boleh kosong!'); return; }
+  const el = document.getElementById('sheets-result');
+  const btn = document.getElementById('btn-sync');
+  btn.textContent = '⏳ Mengambil data...';
+  btn.disabled = true;
+  el.className = 'bulk-result';
+
+  // Sheet name: ALL, kolom C (index 2), mulai baris 2
+  const SHEET_NAME = 'ALL';
+  const COL_INDEX = 2; // kolom C = index 2
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Tidak bisa mengakses sheet. Pastikan sudah di-set public.');
+    const text = await res.text();
+    const rows = text.split('\n').slice(1); // skip header baris 1
+    const numbers = [];
+    rows.forEach(row => {
+      const cols = row.split(',').map(c => c.replace(/^"|"$/g, '').trim());
+      const val = cols[COL_INDEX];
+      if (val && val.length > 0) numbers.push(val);
+    });
+
+    if (!numbers.length) {
+      el.className = 'bulk-result warn';
+      el.textContent = 'Tidak ada data ditemukan di kolom C sheet ALL.';
+      return;
+    }
+
+    // Cek duplikat dengan data yang sudah ada di Supabase
+    const existing = new Set(data.map(d => d.no));
+    const toInsert = [];
+    const seen = new Set();
+    let skipped = 0;
+    numbers.forEach(no => {
+      if (seen.has(no)) { skipped++; return; }
+      seen.add(no);
+      if (existing.has(no)) { skipped++; return; }
+      toInsert.push({ nomor_customer: no, tanggal_ditambahkan: new Date().toLocaleDateString('id-ID') });
+    });
+
+    if (!toInsert.length) {
+      el.className = 'bulk-result warn';
+      el.textContent = `Semua ${numbers.length} nomor dari Sheets sudah ada di database. Tidak ada yang perlu ditambahkan.`;
+      return;
+    }
+
+    const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(toInsert) });
+    inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
+    render(); updateStats();
+    el.className = 'bulk-result ok';
+    el.textContent = `✅ ${toInsert.length} nomor baru berhasil disimpan dari Sheets! (${skipped} sudah ada/duplikat dilewati)`;
+    showToast(`${toInsert.length} data dari Sheets ditambahkan!`);
+  } catch(e) {
+    el.className = 'bulk-result err';
+    el.textContent = 'Gagal: ' + e.message + '. Pastikan sheet sudah public (Anyone with the link).';
+  } finally {
+    btn.textContent = '🔄 Tarik Data dari Sheets';
+    btn.disabled = false;
+  }
+}
+
 function countNo(no) { return data.filter(d => d.no === no).length; }
- 
+
 function updateBulkBar() {
   document.getElementById('bulk-del-info').textContent = `${selected.size} data dipilih`;
   document.getElementById('bulk-del-bar').classList.toggle('show', selected.size > 0);
@@ -455,20 +539,20 @@ function updateBulkBar() {
     chkAll.indeterminate = filtered.some(d => selected.has(d.id)) && !chkAll.checked;
   }
 }
- 
+
 function toggleSelectAll(checked) {
   const q = document.getElementById('search').value.toLowerCase();
   data.filter(d => d.no.toLowerCase().includes(q)).forEach(d => checked ? selected.add(d.id) : selected.delete(d.id));
   render(); updateBulkBar();
 }
- 
+
 function toggleRow(id, checked) {
   checked ? selected.add(id) : selected.delete(id);
   const row = document.querySelector(`.table-row[data-id="${id}"]`);
   if (row) row.classList.toggle('selected', checked);
   updateBulkBar();
 }
- 
+
 function render() {
   const q = document.getElementById('search').value.toLowerCase();
   const filtered = data.filter(d => d.no.toLowerCase().includes(q));
@@ -490,7 +574,7 @@ function render() {
   }).join('');
   updateBulkBar();
 }
- 
+
 function updateStats() {
   document.getElementById('stat-total').textContent = data.length;
   const unique = new Set(data.map(d => d.no));
@@ -499,7 +583,7 @@ function updateStats() {
   unique.forEach(no => { if (countNo(no) > 1) repeat++; });
   document.getElementById('stat-repeat').textContent = repeat;
 }
- 
+
 function askDelete(id) { deleteId = id; document.getElementById('modal-del').classList.add('open'); }
 async function confirmDelete() {
   try {
@@ -508,7 +592,7 @@ async function confirmDelete() {
     render(); updateStats(); closeModal('modal-del'); showToast('Data dihapus.');
   } catch(e) { showToast('Gagal: ' + e.message); closeModal('modal-del'); }
 }
- 
+
 function askDeleteSelected() {
   if (!selected.size) return;
   document.getElementById('modal-del-selected-info').textContent = `${selected.size} data akan dihapus permanen.`;
@@ -523,7 +607,7 @@ async function confirmDeleteSelected() {
     closeModal('modal-del-selected'); showToast(`${ids.length} data berhasil dihapus!`);
   } catch(e) { showToast('Gagal: ' + e.message); closeModal('modal-del-selected'); }
 }
- 
+
 function exportCSV() {
   if (!data.length) { showToast('Tidak ada data!'); return; }
   const csv = ['Nomor Customer,Tanggal Ditambahkan', ...data.map(d => `"${d.no}","${d.date}"`)].join('\n');
@@ -532,7 +616,7 @@ function exportCSV() {
   a.download = `retur-customer-${new Date().toISOString().split('T')[0]}.csv`;
   a.click(); showToast(`${data.length} data di-export!`);
 }
- 
+
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function showToast(msg) {
   const el = document.getElementById('toast');
