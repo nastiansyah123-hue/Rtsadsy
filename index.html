@@ -466,55 +466,63 @@ async function syncSheets() {
   if (!sheetId) { showToast('Sheet ID tidak boleh kosong!'); return; }
   const el = document.getElementById('sheets-result');
   const btn = document.getElementById('btn-sync');
-  btn.textContent = '⏳ Mengambil data...';
   btn.disabled = true;
   el.className = 'bulk-result';
 
-  // Sheet name: ALL, kolom C (index 2), mulai baris 2
   const SHEET_NAME = 'ALL';
-  const COL_INDEX = 2; // kolom C = index 2
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+  const BATCH = 1000;
+  const INSERT_BATCH = 500;
+  let allNumbers = [];
+  let offset = 1;
+  let page = 1;
 
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Tidak bisa mengakses sheet. Pastikan sudah di-set public.');
-    const text = await res.text();
-    const rows = text.split('\n').slice(1); // skip header baris 1
-    const numbers = [];
-    rows.forEach(row => {
-      const cols = row.split(',').map(c => c.replace(/^"|"$/g, '').trim());
-      const val = cols[COL_INDEX];
-      if (val && val.length > 0) numbers.push(val);
-    });
+    // Ambil semua data dengan pagination 1000 baris per request
+    while (true) {
+      btn.textContent = `⏳ Mengambil halaman ${page}... (${allNumbers.length.toLocaleString('id-ID')} baris)`;
+      const query = encodeURIComponent(`select C limit ${BATCH} offset ${offset}`);
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${query}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Tidak bisa mengakses sheet. Pastikan sudah di-set public.');
+      const text = await res.text();
+      const rows = text.split('\n').slice(1).filter(r => r.trim().length > 0);
+      if (!rows.length) break;
+      rows.forEach(row => {
+        const val = row.replace(/^"|"$/g, '').trim();
+        if (val) allNumbers.push(val);
+      });
+      if (rows.length < BATCH) break;
+      offset += BATCH;
+      page++;
+    }
 
-    if (!numbers.length) {
+    if (!allNumbers.length) {
       el.className = 'bulk-result warn';
       el.textContent = 'Tidak ada data ditemukan di kolom C sheet ALL.';
+      btn.textContent = '🔄 Tarik Data dari Sheets';
+      btn.disabled = false;
       return;
     }
 
-    // Hanya skip duplikat dalam satu sesi sheet (baris yang sama persis di sheet)
-    const toInsert = [];
-    const seen = new Set();
-    let skipped = 0;
-    numbers.forEach(no => {
-      if (seen.has(no)) { skipped++; return; }
-      seen.add(no);
-      toInsert.push({ nomor_customer: no, tanggal_ditambahkan: new Date().toLocaleDateString('id-ID') });
-    });
+    // Insert semua ke Supabase dalam batch 500 (semua data, termasuk duplikat)
+    const now = new Date().toLocaleDateString('id-ID');
+    let totalInserted = 0;
 
-    if (!toInsert.length) {
-      el.className = 'bulk-result warn';
-      el.textContent = `Semua ${numbers.length} nomor dari Sheets sudah ada di database. Tidak ada yang perlu ditambahkan.`;
-      return;
+    for (let i = 0; i < allNumbers.length; i += INSERT_BATCH) {
+      const chunk = allNumbers.slice(i, i + INSERT_BATCH).map(no => ({
+        nomor_customer: no,
+        tanggal_ditambahkan: now
+      }));
+      btn.textContent = `⏳ Menyimpan... (${Math.min(i + INSERT_BATCH, allNumbers.length).toLocaleString('id-ID')}/${allNumbers.length.toLocaleString('id-ID')})`;
+      const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
+      inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
+      totalInserted += inserted.length;
     }
 
-    const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(toInsert) });
-    inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
     render(); updateStats();
     el.className = 'bulk-result ok';
-    el.textContent = `✅ ${toInsert.length} nomor berhasil disimpan dari Sheets!${skipped > 0 ? ` (${skipped} baris kosong/duplikat dalam sheet dilewati)` : ''}`;
-    showToast(`${toInsert.length} data dari Sheets ditambahkan!`);
+    el.textContent = `✅ ${totalInserted.toLocaleString('id-ID')} nomor berhasil disimpan dari ${allNumbers.length.toLocaleString('id-ID')} baris di Sheets!`;
+    showToast(`${totalInserted.toLocaleString('id-ID')} data berhasil disinkron!`);
   } catch(e) {
     el.className = 'bulk-result err';
     el.textContent = 'Gagal: ' + e.message + '. Pastikan sheet sudah public (Anyone with the link).';
