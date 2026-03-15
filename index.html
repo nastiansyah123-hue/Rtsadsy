@@ -477,21 +477,25 @@ async function syncSheets() {
   const el = document.getElementById('sheets-result');
   const btn = document.getElementById('btn-sync');
   btn.disabled = true;
-  el.className = 'bulk-result ok';
   el.style.display = 'block';
+  el.className = 'bulk-result ok';
 
   const SHEET_NAME = 'ALL';
-  const FETCH_BATCH = 1000;
-  const INSERT_BATCH = 100; // kecilkan batch insert agar tidak timeout
-  let allNumbers = [];
+  const FETCH_BATCH = 500;
+  const INSERT_BATCH = 100;
   let offset = 1;
   let page = 1;
+  let totalFetched = 0;
+  let totalInserted = 0;
+  let totalFailed = 0;
+  const now = new Date().toLocaleDateString('id-ID');
 
   try {
-    // FASE 1: Ambil semua data dari Sheets
-    el.textContent = '📥 Fase 1/2: Mengambil data dari Google Sheets...';
     while (true) {
-      btn.textContent = `⏳ Halaman ${page}... (${allNumbers.length.toLocaleString('id-ID')} baris)`;
+      // Ambil satu halaman dari Sheets
+      btn.textContent = `⏳ Halaman ${page} (${totalInserted.toLocaleString('id-ID')} tersimpan)`;
+      el.textContent = `📥 Mengambil halaman ${page}... sudah tersimpan: ${totalInserted.toLocaleString('id-ID')}`;
+
       const query = encodeURIComponent(`select C limit ${FETCH_BATCH} offset ${offset}`);
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${query}`;
       const res = await fetch(url);
@@ -499,65 +503,53 @@ async function syncSheets() {
       const text = await res.text();
       const rows = text.split('\n').slice(1).filter(r => r.trim().length > 0);
       if (!rows.length) break;
+
+      // Parse nomor dari halaman ini
+      const numbers = [];
       rows.forEach(row => {
         const val = row.replace(/^"|"$/g, '').trim();
-        if (val) allNumbers.push(val);
+        if (val) numbers.push(val);
       });
-      el.textContent = `📥 Fase 1/2: Mengambil data... ${allNumbers.length.toLocaleString('id-ID')} baris terkumpul`;
+      totalFetched += numbers.length;
+
+      // Langsung insert halaman ini ke Supabase batch kecil
+      for (let i = 0; i < numbers.length; i += INSERT_BATCH) {
+        const chunk = numbers.slice(i, i + INSERT_BATCH).map(no => ({
+          nomor_customer: no,
+          tanggal_ditambahkan: now
+        }));
+        try {
+          const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
+          totalInserted += inserted.length;
+          // Tidak push ke data[] dulu agar tidak membebani memory
+        } catch(e) {
+          totalFailed += chunk.length;
+        }
+        await new Promise(r => setTimeout(r, 30));
+      }
+
       if (rows.length < FETCH_BATCH) break;
       offset += FETCH_BATCH;
       page++;
     }
 
-    if (!allNumbers.length) {
-      el.className = 'bulk-result warn';
-      el.textContent = 'Tidak ada data ditemukan di kolom C sheet ALL.';
-      btn.textContent = '🔄 Tarik Data dari Sheets';
-      btn.disabled = false;
-      return;
-    }
-
-    // FASE 2: Simpan ke Supabase batch kecil dengan retry
-    const now = new Date().toLocaleDateString('id-ID');
-    let totalInserted = 0;
-    let totalFailed = 0;
-    el.textContent = `💾 Fase 2/2: Menyimpan ${allNumbers.length.toLocaleString('id-ID')} data ke Supabase...`;
-
-    for (let i = 0; i < allNumbers.length; i += INSERT_BATCH) {
-      const chunk = allNumbers.slice(i, i + INSERT_BATCH).map(no => ({
-        nomor_customer: no,
-        tanggal_ditambahkan: now
-      }));
-      btn.textContent = `💾 Menyimpan ${Math.min(i + INSERT_BATCH, allNumbers.length).toLocaleString('id-ID')}/${allNumbers.length.toLocaleString('id-ID')}`;
-      el.textContent = `💾 Fase 2/2: Menyimpan... ${totalInserted.toLocaleString('id-ID')} tersimpan dari ${allNumbers.length.toLocaleString('id-ID')}`;
-
-      try {
-        const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
-        inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
-        totalInserted += inserted.length;
-      } catch(insertErr) {
-        totalFailed += chunk.length;
-        console.error('Batch gagal:', insertErr.message);
-      }
-
-      // Delay kecil agar tidak flood Supabase
-      await new Promise(r => setTimeout(r, 50));
-    }
-
-    render(); updateStats();
+    // Setelah semua selesai, reload data dari Supabase
+    el.textContent = `🔄 Memuat ulang data dari Supabase...`;
+    btn.textContent = `🔄 Memuat ulang...`;
+    await loadData();
 
     if (totalFailed > 0) {
       el.className = 'bulk-result warn';
-      el.textContent = `⚠️ ${totalInserted.toLocaleString('id-ID')} berhasil disimpan, ${totalFailed.toLocaleString('id-ID')} gagal. Coba sync ulang untuk data yang belum tersimpan.`;
+      el.textContent = `⚠️ ${totalInserted.toLocaleString('id-ID')} berhasil, ${totalFailed.toLocaleString('id-ID')} gagal dari total ${totalFetched.toLocaleString('id-ID')} baris.`;
     } else {
       el.className = 'bulk-result ok';
-      el.textContent = `✅ Selesai! ${totalInserted.toLocaleString('id-ID')} nomor berhasil disimpan dari ${allNumbers.length.toLocaleString('id-ID')} baris di Sheets.`;
+      el.textContent = `✅ Selesai! ${totalInserted.toLocaleString('id-ID')} nomor berhasil disimpan dari ${totalFetched.toLocaleString('id-ID')} baris di Sheets.`;
     }
     showToast(`${totalInserted.toLocaleString('id-ID')} data disimpan!`);
 
   } catch(e) {
     el.className = 'bulk-result err';
-    el.textContent = 'Gagal: ' + e.message;
+    el.textContent = `Gagal di halaman ${page}: ${e.message}`;
   } finally {
     btn.textContent = '🔄 Tarik Data dari Sheets';
     btn.disabled = false;
