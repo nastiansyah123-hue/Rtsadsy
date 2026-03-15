@@ -391,8 +391,18 @@ async function sbFetch(path, options = {}) {
 async function loadData() {
   if (currentRole === 'admin') document.getElementById('table-body').innerHTML = '<div class="empty-state"><p>Memuat data...</p></div>';
   try {
-    const rows = await sbFetch(`${TABLE}?order=id.desc`);
-    data = rows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
+    const BATCH = 1000;
+    let allRows = [];
+    let from = 0;
+    while (true) {
+      const rows = await sbFetch(`${TABLE}?order=id.desc&limit=${BATCH}&offset=${from}`, {
+        headers: { 'Range-Unit': 'items' }
+      });
+      allRows = allRows.concat(rows);
+      if (rows.length < BATCH) break;
+      from += BATCH;
+    }
+    data = allRows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
     updateStats();
     if (currentRole === 'admin') render();
   } catch(e) { showToast('Gagal memuat data: ' + e.message); }
