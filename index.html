@@ -227,6 +227,22 @@
       </div>
     </div>
 
+    <!-- Breakdown retur -->
+    <div class="stats-row" id="breakdown-row" style="display:none">
+      <div class="stat-card">
+        <div class="s-label">Retur 1x</div>
+        <div class="s-value" id="stat-1x" style="color:var(--green)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Retur 2x</div>
+        <div class="s-value" id="stat-2x" style="color:var(--amber)">0</div>
+      </div>
+      <div class="stat-card accent-card">
+        <div class="s-label">Retur 3x ke atas</div>
+        <div class="s-value" id="stat-3x">0</div>
+      </div>
+    </div>
+
     <!-- CS VIEW -->
     <div class="cs-view" id="cs-view" style="display:none">
       <div class="cs-search-card">
@@ -413,7 +429,7 @@ async function sbFetch(path, options = {}) {
 async function loadData() {
   if (currentRole === 'admin') document.getElementById('table-body').innerHTML = '<div class="empty-state"><p>Memuat data...</p></div>';
   try {
-    // Hanya ambil count untuk statistik — tidak load semua data ke memory
+    // Ambil total count
     const countRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=nomor_customer`, {
       headers: {
         'apikey': SUPABASE_KEY,
@@ -424,21 +440,36 @@ async function loadData() {
       }
     });
     const totalCount = parseInt(countRes.headers.get('content-range')?.split('/')?.[1] || '0');
-
-    // Ambil sample data terbaru untuk tabel (max 500 baris terakhir)
-    const rows = await sbFetch(`${TABLE}?order=id.desc&limit=500`);
-    data = rows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
-
-    // Update stats pakai total count dari server
     document.getElementById('stat-total').textContent = totalCount.toLocaleString('id-ID');
 
-    // Hitung unik dan berulang dari sample + estimasi
-    const unique = new Set(data.map(d => d.no));
-    document.getElementById('stat-unique').textContent = '~' + unique.size.toLocaleString('id-ID');
-    let repeat = 0;
-    unique.forEach(no => { if (data.filter(d => d.no === no).length > 1) repeat++; });
-    document.getElementById('stat-repeat').textContent = '~' + repeat.toLocaleString('id-ID');
+    // Ambil breakdown retur via SQL RPC
+    const breakdownRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/retur_breakdown`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    });
 
+    if (breakdownRes.ok) {
+      const bd = await breakdownRes.json();
+      document.getElementById('stat-unique').textContent = (bd.total_unik || 0).toLocaleString('id-ID');
+      document.getElementById('stat-repeat').textContent = (bd.retur_berulang || 0).toLocaleString('id-ID');
+      document.getElementById('stat-1x').textContent = (bd.retur_1x || 0).toLocaleString('id-ID');
+      document.getElementById('stat-2x').textContent = (bd.retur_2x || 0).toLocaleString('id-ID');
+      document.getElementById('stat-3x').textContent = (bd.retur_3x_plus || 0).toLocaleString('id-ID');
+      document.getElementById('breakdown-row').style.display = 'grid';
+    } else {
+      // Fallback jika RPC belum dibuat
+      document.getElementById('stat-unique').textContent = '-';
+      document.getElementById('stat-repeat').textContent = '-';
+    }
+
+    // Ambil 500 data terbaru untuk tabel admin
+    const rows = await sbFetch(`${TABLE}?order=id.desc&limit=500`);
+    data = rows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
     if (currentRole === 'admin') render();
   } catch(e) { showToast('Gagal memuat data: ' + e.message); }
 }
