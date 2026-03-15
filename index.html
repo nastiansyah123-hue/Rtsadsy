@@ -477,23 +477,25 @@ async function syncSheets() {
   const el = document.getElementById('sheets-result');
   const btn = document.getElementById('btn-sync');
   btn.disabled = true;
-  el.className = 'bulk-result';
+  el.className = 'bulk-result ok';
+  el.style.display = 'block';
 
   const SHEET_NAME = 'ALL';
-  const BATCH = 1000;
-  const INSERT_BATCH = 500;
+  const FETCH_BATCH = 1000;
+  const INSERT_BATCH = 100; // kecilkan batch insert agar tidak timeout
   let allNumbers = [];
   let offset = 1;
   let page = 1;
 
   try {
-    // Ambil semua data dengan pagination 1000 baris per request
+    // FASE 1: Ambil semua data dari Sheets
+    el.textContent = '📥 Fase 1/2: Mengambil data dari Google Sheets...';
     while (true) {
-      btn.textContent = `⏳ Mengambil halaman ${page}... (${allNumbers.length.toLocaleString('id-ID')} baris)`;
-      const query = encodeURIComponent(`select C limit ${BATCH} offset ${offset}`);
+      btn.textContent = `⏳ Halaman ${page}... (${allNumbers.length.toLocaleString('id-ID')} baris)`;
+      const query = encodeURIComponent(`select C limit ${FETCH_BATCH} offset ${offset}`);
       const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${query}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('Tidak bisa mengakses sheet. Pastikan sudah di-set public.');
+      if (!res.ok) throw new Error('Sheet tidak bisa diakses. Pastikan sudah public.');
       const text = await res.text();
       const rows = text.split('\n').slice(1).filter(r => r.trim().length > 0);
       if (!rows.length) break;
@@ -501,8 +503,9 @@ async function syncSheets() {
         const val = row.replace(/^"|"$/g, '').trim();
         if (val) allNumbers.push(val);
       });
-      if (rows.length < BATCH) break;
-      offset += BATCH;
+      el.textContent = `📥 Fase 1/2: Mengambil data... ${allNumbers.length.toLocaleString('id-ID')} baris terkumpul`;
+      if (rows.length < FETCH_BATCH) break;
+      offset += FETCH_BATCH;
       page++;
     }
 
@@ -514,28 +517,47 @@ async function syncSheets() {
       return;
     }
 
-    // Insert semua ke Supabase dalam batch 500 (semua data, termasuk duplikat)
+    // FASE 2: Simpan ke Supabase batch kecil dengan retry
     const now = new Date().toLocaleDateString('id-ID');
     let totalInserted = 0;
+    let totalFailed = 0;
+    el.textContent = `💾 Fase 2/2: Menyimpan ${allNumbers.length.toLocaleString('id-ID')} data ke Supabase...`;
 
     for (let i = 0; i < allNumbers.length; i += INSERT_BATCH) {
       const chunk = allNumbers.slice(i, i + INSERT_BATCH).map(no => ({
         nomor_customer: no,
         tanggal_ditambahkan: now
       }));
-      btn.textContent = `⏳ Menyimpan... (${Math.min(i + INSERT_BATCH, allNumbers.length).toLocaleString('id-ID')}/${allNumbers.length.toLocaleString('id-ID')})`;
-      const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
-      inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
-      totalInserted += inserted.length;
+      btn.textContent = `💾 Menyimpan ${Math.min(i + INSERT_BATCH, allNumbers.length).toLocaleString('id-ID')}/${allNumbers.length.toLocaleString('id-ID')}`;
+      el.textContent = `💾 Fase 2/2: Menyimpan... ${totalInserted.toLocaleString('id-ID')} tersimpan dari ${allNumbers.length.toLocaleString('id-ID')}`;
+
+      try {
+        const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
+        inserted.forEach(r => data.unshift({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
+        totalInserted += inserted.length;
+      } catch(insertErr) {
+        totalFailed += chunk.length;
+        console.error('Batch gagal:', insertErr.message);
+      }
+
+      // Delay kecil agar tidak flood Supabase
+      await new Promise(r => setTimeout(r, 50));
     }
 
     render(); updateStats();
-    el.className = 'bulk-result ok';
-    el.textContent = `✅ ${totalInserted.toLocaleString('id-ID')} nomor berhasil disimpan dari ${allNumbers.length.toLocaleString('id-ID')} baris di Sheets!`;
-    showToast(`${totalInserted.toLocaleString('id-ID')} data berhasil disinkron!`);
+
+    if (totalFailed > 0) {
+      el.className = 'bulk-result warn';
+      el.textContent = `⚠️ ${totalInserted.toLocaleString('id-ID')} berhasil disimpan, ${totalFailed.toLocaleString('id-ID')} gagal. Coba sync ulang untuk data yang belum tersimpan.`;
+    } else {
+      el.className = 'bulk-result ok';
+      el.textContent = `✅ Selesai! ${totalInserted.toLocaleString('id-ID')} nomor berhasil disimpan dari ${allNumbers.length.toLocaleString('id-ID')} baris di Sheets.`;
+    }
+    showToast(`${totalInserted.toLocaleString('id-ID')} data disimpan!`);
+
   } catch(e) {
     el.className = 'bulk-result err';
-    el.textContent = 'Gagal: ' + e.message + '. Pastikan sheet sudah public (Anyone with the link).';
+    el.textContent = 'Gagal: ' + e.message;
   } finally {
     btn.textContent = '🔄 Tarik Data dari Sheets';
     btn.disabled = false;
