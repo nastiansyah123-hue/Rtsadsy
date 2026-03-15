@@ -217,29 +217,43 @@
         <div class="s-label">Total Entri Retur</div>
         <div class="s-value" id="stat-total">0</div>
       </div>
-      <div class="stat-card">
-        <div class="s-label">Customer Unik</div>
+      <div class="stat-card" style="cursor:pointer" onclick="filterByRetur('unik')" title="Klik untuk lihat daftar">
+        <div class="s-label">Customer Unik ↗</div>
         <div class="s-value" id="stat-unique">0</div>
       </div>
-      <div class="stat-card accent-card">
-        <div class="s-label">Retur Berulang</div>
+      <div class="stat-card accent-card" style="cursor:pointer" onclick="filterByRetur('berulang')" title="Klik untuk lihat daftar">
+        <div class="s-label">Retur Berulang ↗</div>
         <div class="s-value" id="stat-repeat">0</div>
       </div>
     </div>
 
     <!-- Breakdown retur -->
     <div class="stats-row" id="breakdown-row" style="display:none">
-      <div class="stat-card">
-        <div class="s-label">Retur 1x</div>
+      <div class="stat-card" style="cursor:pointer" onclick="filterByRetur('1x')" title="Klik untuk lihat daftar">
+        <div class="s-label">Retur 1x ↗</div>
         <div class="s-value" id="stat-1x" style="color:var(--green)">0</div>
       </div>
-      <div class="stat-card">
-        <div class="s-label">Retur 2x</div>
+      <div class="stat-card" style="cursor:pointer" onclick="filterByRetur('2x')" title="Klik untuk lihat daftar">
+        <div class="s-label">Retur 2x ↗</div>
         <div class="s-value" id="stat-2x" style="color:var(--amber)">0</div>
       </div>
-      <div class="stat-card accent-card">
-        <div class="s-label">Retur 3x ke atas</div>
+      <div class="stat-card accent-card" style="cursor:pointer" onclick="filterByRetur('3x')" title="Klik untuk lihat daftar">
+        <div class="s-label">Retur 3x ke atas ↗</div>
         <div class="s-value" id="stat-3x">0</div>
+      </div>
+    </div>
+
+    <!-- Filter result panel -->
+    <div id="filter-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem;box-shadow:var(--shadow);animation:fadeUp 0.3s ease both">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <span id="filter-title" style="font-size:14px;font-weight:600"></span>
+          <span id="filter-count" style="font-size:12px;color:var(--text3);margin-left:8px"></span>
+        </div>
+        <button onclick="closeFilterPanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--text3);padding:2px 6px;border-radius:var(--radius-sm)">✕</button>
+      </div>
+      <div id="filter-list" style="max-height:320px;overflow-y:auto;font-family:'DM Mono',monospace;font-size:13px">
+        <div style="text-align:center;color:var(--text3);padding:1rem">Memuat...</div>
       </div>
     </div>
 
@@ -686,6 +700,80 @@ async function confirmResetSync() {
   } catch(e) {
     el.className = 'bulk-result err';
     el.textContent = 'Gagal menghapus data: ' + e.message;
+  }
+}
+
+function closeFilterPanel() {
+  document.getElementById('filter-panel').style.display = 'none';
+}
+
+async function filterByRetur(type) {
+  const panel = document.getElementById('filter-panel');
+  const title = document.getElementById('filter-title');
+  const countEl = document.getElementById('filter-count');
+  const list = document.getElementById('filter-list');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  list.innerHTML = '<div style="text-align:center;color:var(--text3);padding:1rem">Memuat data...</div>';
+
+  const labels = { '1x': 'Retur 1x', '2x': 'Retur 2x', '3x': 'Retur 3x ke atas', 'berulang': 'Retur Berulang (2x+)', 'unik': 'Semua Customer Unik' };
+  title.textContent = labels[type] || type;
+
+  try {
+    // Ambil semua data grouped by nomor_customer
+    const BATCH = 1000;
+    let allRows = [], from = 0;
+    while (true) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=nomor_customer,tanggal_ditambahkan&order=nomor_customer.asc&limit=${BATCH}&offset=${from}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      const rows = await res.json();
+      allRows = allRows.concat(rows);
+      if (rows.length < BATCH) break;
+      from += BATCH;
+    }
+
+    // Group by nomor_customer
+    const grouped = {};
+    allRows.forEach(r => {
+      if (!grouped[r.nomor_customer]) grouped[r.nomor_customer] = [];
+      grouped[r.nomor_customer].push(r.tanggal_ditambahkan);
+    });
+
+    // Filter sesuai type
+    let filtered = Object.entries(grouped).filter(([no, dates]) => {
+      const c = dates.length;
+      if (type === '1x') return c === 1;
+      if (type === '2x') return c === 2;
+      if (type === '3x') return c >= 3;
+      if (type === 'berulang') return c >= 2;
+      if (type === 'unik') return true;
+      return true;
+    });
+
+    // Sort by count desc
+    filtered.sort((a, b) => b[1].length - a[1].length);
+    countEl.textContent = `${filtered.length.toLocaleString('id-ID')} nomor`;
+
+    if (!filtered.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text3);padding:1rem">Tidak ada data.</div>';
+      return;
+    }
+
+    // Render list
+    list.innerHTML = filtered.map(([no, dates]) => {
+      const c = dates.length;
+      const bc = c >= 3 ? `background:var(--red-light);color:var(--red)` : c === 2 ? `background:var(--amber-light);color:var(--amber)` : `background:var(--green-light);color:var(--green)`;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border)">
+        <span style="font-weight:500">${no}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--text3)">${dates[dates.length-1]}</span>
+          <span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;${bc}">${c}x</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="text-align:center;color:var(--red);padding:1rem">Gagal memuat: ${e.message}</div>`;
   }
 }
 
