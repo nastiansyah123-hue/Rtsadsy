@@ -413,41 +413,84 @@ async function sbFetch(path, options = {}) {
 async function loadData() {
   if (currentRole === 'admin') document.getElementById('table-body').innerHTML = '<div class="empty-state"><p>Memuat data...</p></div>';
   try {
+    // Hanya ambil count untuk statistik — tidak load semua data ke memory
+    const countRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=nomor_customer`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'count=exact',
+        'Range-Unit': 'items',
+        'Range': '0-0'
+      }
+    });
+    const totalCount = parseInt(countRes.headers.get('content-range')?.split('/')?.[1] || '0');
+
+    // Ambil sample data terbaru untuk tabel (max 500 baris terakhir)
+    const rows = await sbFetch(`${TABLE}?order=id.desc&limit=500`);
+    data = rows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
+
+    // Update stats pakai total count dari server
+    document.getElementById('stat-total').textContent = totalCount.toLocaleString('id-ID');
+
+    // Hitung unik dan berulang dari sample + estimasi
+    const unique = new Set(data.map(d => d.no));
+    document.getElementById('stat-unique').textContent = '~' + unique.size.toLocaleString('id-ID');
+    let repeat = 0;
+    unique.forEach(no => { if (data.filter(d => d.no === no).length > 1) repeat++; });
+    document.getElementById('stat-repeat').textContent = '~' + repeat.toLocaleString('id-ID');
+
+    if (currentRole === 'admin') render();
+  } catch(e) { showToast('Gagal memuat data: ' + e.message); }
+}
+
+async function loadAllForSearch() {
+  // Dipakai CS untuk pencarian — ambil semua nomor saja (tanpa id/date) agar ringan
+  try {
     const BATCH = 1000;
     let allRows = [];
     let from = 0;
     while (true) {
-      const rows = await sbFetch(`${TABLE}?order=id.desc&limit=${BATCH}&offset=${from}`, {
-        headers: { 'Range-Unit': 'items' }
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=id,nomor_customer,tanggal_ditambahkan&order=id.desc&limit=${BATCH}&offset=${from}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
       });
+      const rows = await res.json();
       allRows = allRows.concat(rows);
       if (rows.length < BATCH) break;
       from += BATCH;
     }
     data = allRows.map(r => ({ id: r.id, no: r.nomor_customer, date: r.tanggal_ditambahkan }));
-    updateStats();
-    if (currentRole === 'admin') render();
-  } catch(e) { showToast('Gagal memuat data: ' + e.message); }
+  } catch(e) { showToast('Gagal memuat data pencarian: ' + e.message); }
 }
 
 /* ── CS ── */
-function csSearch() {
+async function csSearch() {
   const q = document.getElementById('cs-inp').value.trim();
   const el = document.getElementById('cs-result');
   if (!q) { el.className = 'cs-result'; return; }
-  const matches = data.filter(d => d.no.toLowerCase().includes(q.toLowerCase()));
-  if (!matches.length) {
+
+  // Kalau data belum lengkap, muat semua dulu
+  el.className = 'cs-result not-found';
+  el.innerHTML = '<div class="res-count">🔍 Mencari...</div>';
+
+  // Cari langsung ke Supabase
+  try {
+    const rows = await sbFetch(`${TABLE}?nomor_customer=ilike.*${encodeURIComponent(q)}*&order=id.desc`);
+    if (!rows.length) {
+      el.className = 'cs-result not-found';
+      el.innerHTML = `<div class="res-no">${q}</div><div class="res-count">Nomor ini tidak ditemukan dalam data retur.</div>`;
+    } else {
+      const uniqueNos = [...new Set(rows.map(r => r.nomor_customer))];
+      el.className = 'cs-result found';
+      el.innerHTML = uniqueNos.map(no => {
+        const entries = rows.filter(r => r.nomor_customer === no);
+        return `<div class="res-no">${no}</div>
+          <div class="res-count">⚠️ Pernah retur sebanyak <strong>${entries.length}x</strong></div>
+          <div class="res-dates">Tanggal: ${entries.map(r => r.tanggal_ditambahkan).join(' · ')}</div>`;
+      }).join('<hr style="border:none;border-top:1px solid rgba(45,106,79,0.2);margin:10px 0">');
+    }
+  } catch(e) {
     el.className = 'cs-result not-found';
-    el.innerHTML = `<div class="res-no">${q}</div><div class="res-count">Nomor ini tidak ditemukan dalam data retur.</div>`;
-  } else {
-    const uniqueNos = [...new Set(matches.map(d => d.no))];
-    el.className = 'cs-result found';
-    el.innerHTML = uniqueNos.map(no => {
-      const entries = data.filter(d => d.no === no);
-      return `<div class="res-no">${no}</div>
-        <div class="res-count">⚠️ Pernah retur sebanyak <strong>${entries.length}x</strong></div>
-        <div class="res-dates">Tanggal: ${entries.map(d => d.date).join(' · ')}</div>`;
-    }).join('<hr style="border:none;border-top:1px solid rgba(45,106,79,0.2);margin:10px 0">');
+    el.innerHTML = `<div class="res-count">Gagal mencari: ${e.message}</div>`;
   }
 }
 
@@ -665,12 +708,13 @@ function render() {
 }
 
 function updateStats() {
-  document.getElementById('stat-total').textContent = data.length;
+  // Total count sudah diset dari server di loadData, jangan override
+  // Hanya update unique dan repeat dari data sample yang ada
   const unique = new Set(data.map(d => d.no));
-  document.getElementById('stat-unique').textContent = unique.size;
+  document.getElementById('stat-unique').textContent = '~' + unique.size.toLocaleString('id-ID');
   let repeat = 0;
-  unique.forEach(no => { if (countNo(no) > 1) repeat++; });
-  document.getElementById('stat-repeat').textContent = repeat;
+  unique.forEach(no => { if (data.filter(d => d.no === no).length > 1) repeat++; });
+  document.getElementById('stat-repeat').textContent = '~' + repeat.toLocaleString('id-ID');
 }
 
 function askDelete(id) { deleteId = id; document.getElementById('modal-del').classList.add('open'); }
