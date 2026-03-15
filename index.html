@@ -453,21 +453,39 @@ function masuk() {
     errEl.style.display = 'none';
   }
 
+  // Simpan session
+  localStorage.setItem('session_role', currentRole);
+  startApp(currentRole);
+}
+
+function startApp(role) {
+  currentRole = role;
   document.getElementById('role-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   const badge = document.getElementById('role-badge');
-  badge.textContent = currentRole === 'admin' ? 'Admin' : 'CS';
-  badge.className = 'role-badge ' + currentRole;
-  document.getElementById('admin-view').style.display = currentRole === 'admin' ? 'block' : 'none';
-  document.getElementById('cs-view').style.display = currentRole === 'cs' ? 'block' : 'none';
+  badge.textContent = role === 'admin' ? 'Admin' : 'CS';
+  badge.className = 'role-badge ' + role;
+  document.getElementById('admin-view').style.display = role === 'admin' ? 'block' : 'none';
+  document.getElementById('cs-view').style.display = role === 'cs' ? 'block' : 'none';
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   const lastOffset = localStorage.getItem('sync_last_offset');
-  if (lastOffset) document.getElementById('sync-offset').value = lastOffset;
+  if (lastOffset && role === 'admin') document.getElementById('sync-offset').value = lastOffset;
   loadData();
 }
 
+// Cek session saat halaman dimuat
+window.addEventListener('DOMContentLoaded', () => {
+  const savedRole = localStorage.getItem('session_role');
+  if (savedRole === 'cs') {
+    startApp('cs');
+  } else if (savedRole === 'admin') {
+    startApp('admin');
+  }
+});
+
 function logout() {
   currentRole = null; data = []; selected.clear();
+  localStorage.removeItem('session_role');
   document.getElementById('app').style.display = 'none';
   document.getElementById('role-screen').style.display = 'flex';
   document.getElementById('btn-admin').classList.remove('selected');
