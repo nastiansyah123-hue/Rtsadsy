@@ -28,9 +28,9 @@
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
   }
-
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   body {
     font-family: 'Sora', sans-serif;
     background: var(--bg);
@@ -38,7 +38,7 @@
     min-height: 100vh;
     padding: 0;
   }
-
+ 
   /* Header */
   .top-bar {
     background: var(--surface);
@@ -75,14 +75,14 @@
     color: var(--text3);
     font-family: 'DM Mono', monospace;
   }
-
+ 
   /* Layout */
   .container {
     max-width: 860px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
   }
-
+ 
   /* Stats */
   .stats-row {
     display: grid;
@@ -119,7 +119,7 @@
   }
   .stat-card.accent-card .s-label { color: rgba(255,255,255,0.7); }
   .stat-card.accent-card .s-value { color: #fff; }
-
+ 
   /* Input section */
   .input-section {
     background: var(--surface);
@@ -138,7 +138,7 @@
     color: var(--text3);
     margin-bottom: 1rem;
   }
-
+ 
   /* Tabs */
   .tabs {
     display: flex;
@@ -168,7 +168,7 @@
   }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-
+ 
   /* Single input */
   .single-row {
     display: flex;
@@ -187,7 +187,7 @@
   }
   .single-row input:focus { outline: none; border-color: var(--accent); background: #fff; }
   .single-row input::placeholder { color: var(--text3); }
-
+ 
   /* Bulk input */
   textarea {
     width: 100%;
@@ -211,7 +211,7 @@
     margin: 6px 0 10px;
   }
   .bulk-actions { display: flex; gap: 8px; }
-
+ 
   /* Buttons */
   .btn {
     padding: 9px 20px;
@@ -234,7 +234,7 @@
     color: var(--text2);
   }
   .btn-secondary:hover { background: var(--surface2); }
-
+ 
   /* Bulk result */
   .bulk-result {
     margin-top: 10px;
@@ -245,7 +245,7 @@
   }
   .bulk-result.ok { display: block; background: var(--green-light); color: var(--green); }
   .bulk-result.warn { display: block; background: var(--amber-light); color: var(--amber); }
-
+ 
   .btn-export {
     background: var(--green-light);
     color: var(--green);
@@ -311,7 +311,7 @@
     transition: all 0.15s;
   }
   .clear-btn:hover { background: var(--red-light); border-color: #fca5a5; }
-
+ 
   /* Table */
   .table-section {
     background: var(--surface);
@@ -395,7 +395,7 @@
     opacity: 0.5;
   }
   .empty-state p { font-size: 14px; }
-
+ 
   /* Toast */
   .toast {
     position: fixed;
@@ -419,7 +419,7 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
-
+ 
   /* Confirm modal */
   .modal-bg {
     display: none;
@@ -442,7 +442,7 @@
   .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
   .modal p { font-size: 13px; color: var(--text2); margin-bottom: 1.25rem; }
   .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
-
+ 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -451,12 +451,12 @@
     from { opacity: 0; transform: translateX(-6px); }
     to { opacity: 1; transform: translateX(0); }
   }
-
+ 
   /* Scrollbar */
   .table-body::-webkit-scrollbar { width: 4px; }
   .table-body::-webkit-scrollbar-track { background: transparent; }
   .table-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
+ 
   @media (max-width: 600px) {
     .stats-row { grid-template-columns: 1fr 1fr; }
     .stats-row .stat-card:last-child { grid-column: span 2; }
@@ -469,7 +469,7 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="top-bar">
   <div class="logo">
     <div class="logo-dot">R</div>
@@ -477,9 +477,9 @@
   </div>
   <div class="date-info" id="date-display"></div>
 </div>
-
+ 
 <div class="container">
-
+ 
   <div class="stats-row">
     <div class="stat-card">
       <div class="s-label">Total Entri Retur</div>
@@ -494,21 +494,21 @@
       <div class="s-value" id="stat-repeat">0</div>
     </div>
   </div>
-
+ 
   <div class="input-section">
     <div class="section-label">Tambah Data Retur</div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('single')">Satu Nomor</button>
       <button class="tab-btn" onclick="switchTab('bulk')">Input Masal</button>
     </div>
-
+ 
     <div class="tab-panel active" id="panel-single">
       <div class="single-row">
         <input type="text" id="inp-single" placeholder="Masukkan nomor customer..." onkeydown="if(event.key==='Enter')addOne()" />
         <button class="btn btn-primary" onclick="addOne()">+ Tambah</button>
       </div>
     </div>
-
+ 
     <div class="tab-panel" id="panel-bulk">
       <textarea id="inp-bulk" placeholder="Masukkan banyak nomor sekaligus, satu nomor per baris:&#10;CUST-001&#10;CUST-002&#10;CUST-003&#10;..."></textarea>
       <p class="bulk-hint">Satu nomor per baris. Duplikat dalam satu sesi akan dilewati secara otomatis.</p>
@@ -519,19 +519,14 @@
       <div class="bulk-result" id="bulk-result"></div>
     </div>
   </div>
-
+ 
   <div class="toolbar">
     <input type="text" id="search" placeholder="Cari nomor customer..." oninput="render()" />
     <button class="btn btn-export" onclick="exportCSV()" title="Export ke file CSV">⬇ Export CSV</button>
-    <label class="btn btn-import" title="Import dari file CSV">
-      ⬆ Import CSV
-      <input type="file" id="inp-import" accept=".csv" onchange="importCSV(event)" style="display:none" />
-    </label>
-    <button class="clear-btn" onclick="askClearAll()">Hapus Semua</button>
   </div>
-
+ 
   <div class="import-result" id="import-result"></div>
-
+ 
   <div class="table-section">
     <div class="table-header">
       <span>Nomor Customer</span>
@@ -546,9 +541,9 @@
       </div>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- Modal konfirmasi hapus satu -->
 <div class="modal-bg" id="modal-del">
   <div class="modal">
@@ -560,29 +555,19 @@
     </div>
   </div>
 </div>
-
-<!-- Modal konfirmasi hapus semua -->
-<div class="modal-bg" id="modal-clear">
-  <div class="modal">
-    <h3>Hapus semua data?</h3>
-    <p>Seluruh data retur akan dihapus permanen dan tidak bisa dikembalikan.</p>
-    <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeModal('modal-clear')">Batal</button>
-      <button class="btn btn-primary" style="background:#991b1b;border-color:#991b1b" onclick="confirmClearAll()">Hapus Semua</button>
-    </div>
-  </div>
-</div>
-
+ 
+ 
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 const SUPABASE_URL = 'https://xpmnhwqkivymxaopmfjk.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwbW5od3FraXZ5bXhhb3BtZmprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTc2MDEsImV4cCI6MjA4OTEzMzYwMX0.lLoCjX-vMpy1IpJ_T9Qm4J50fAfG5SUWanZjdrp1NGM';
 const TABLE = 'retur_customer';
-
+ 
 let data = [];
 let deleteId = null;
-
+ 
 async function sbFetch(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
@@ -601,7 +586,7 @@ async function sbFetch(path, options = {}) {
   const text = await res.text();
   return text ? JSON.parse(text) : [];
 }
-
+ 
 async function load() {
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   setLoading(true);
@@ -615,20 +600,20 @@ async function load() {
     setLoading(false);
   }
 }
-
+ 
 function setLoading(on) {
   document.getElementById('table-body').innerHTML = on
     ? '<div class="empty-state"><p>Memuat data...</p></div>'
     : '';
 }
-
+ 
 function switchTab(t) {
   document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i===0&&t==='single')||(i===1&&t==='bulk')));
   document.getElementById('panel-single').classList.toggle('active', t==='single');
   document.getElementById('panel-bulk').classList.toggle('active', t==='bulk');
   document.getElementById('bulk-result').className = 'bulk-result';
 }
-
+ 
 async function addOne() {
   const val = document.getElementById('inp-single').value.trim();
   if (!val) { showToast('Masukkan nomor customer terlebih dahulu!'); return; }
@@ -646,7 +631,7 @@ async function addOne() {
     showToast('Gagal menyimpan: ' + e.message);
   }
 }
-
+ 
 async function addBulk() {
   const raw = document.getElementById('inp-bulk').value;
   const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -682,9 +667,9 @@ async function addBulk() {
     el.textContent = 'Gagal menyimpan: ' + e.message;
   }
 }
-
+ 
 function countNo(no) { return data.filter(d => d.no === no).length; }
-
+ 
 function render() {
   const q = document.getElementById('search').value.toLowerCase();
   const filtered = data.filter(d => d.no.toLowerCase().includes(q));
@@ -704,7 +689,7 @@ function render() {
     </div>`;
   }).join('');
 }
-
+ 
 function updateStats() {
   document.getElementById('stat-total').textContent = data.length;
   const unique = new Set(data.map(d => d.no));
@@ -713,7 +698,7 @@ function updateStats() {
   unique.forEach(no => { if (countNo(no) > 1) repeat++; });
   document.getElementById('stat-repeat').textContent = repeat;
 }
-
+ 
 function askDelete(id) {
   deleteId = id;
   document.getElementById('modal-del').classList.add('open');
@@ -749,14 +734,14 @@ async function confirmClearAll() {
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
-
+ 
 function showToast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2400);
 }
-
+ 
 function exportCSV() {
   if (!data.length) { showToast('Tidak ada data untuk di-export!'); return; }
   const header = 'Nomor Customer,Tanggal Ditambahkan';
@@ -771,7 +756,7 @@ function exportCSV() {
   URL.revokeObjectURL(url);
   showToast(`${data.length} data berhasil di-export!`);
 }
-
+ 
 function importCSV(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -811,7 +796,7 @@ function importCSV(e) {
   reader.readAsText(file);
   e.target.value = '';
 }
-
+ 
 load();
 </script>
 </body>
