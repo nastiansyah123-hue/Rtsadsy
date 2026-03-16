@@ -471,6 +471,92 @@ function startApp(role) {
   const lastOffset = localStorage.getItem('sync_last_offset');
   if (lastOffset && role === 'admin') document.getElementById('sync-offset').value = lastOffset;
   loadData();
+
+  // Auto-sync harian — cek apakah sudah lebih dari 24 jam sejak sync terakhir
+  if (role === 'admin') {
+    checkAutoSync();
+    // Cek setiap jam apakah sudah waktunya sync
+    setInterval(checkAutoSync, 60 * 60 * 1000);
+  }
+}
+
+async function checkAutoSync() {
+  const INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 jam
+  const lastSync = parseInt(localStorage.getItem('last_auto_sync') || '0');
+  const now = Date.now();
+  if (now - lastSync < INTERVAL_MS) {
+    const next = new Date(lastSync + INTERVAL_MS);
+    console.log(`Auto-sync berikutnya: ${next.toLocaleString('id-ID')}`);
+    showAutoSyncStatus(`Sync otomatis berikutnya: ${next.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})} — ${next.toLocaleDateString('id-ID')}`);
+    return;
+  }
+  console.log('Menjalankan auto-sync harian...');
+  showAutoSyncStatus('🔄 Auto-sync harian sedang berjalan...');
+  await runAutoSync();
+}
+
+async function runAutoSync() {
+  const sheetId = '15mdGnbEPdun2MyhBxugmBBxonZCra1REnwBUGDWWgqs';
+  const SHEET_NAME = 'ALL';
+  const FETCH_BATCH = 500;
+  const INSERT_BATCH = 100;
+  const now = new Date().toLocaleDateString('id-ID');
+  let offset = 1;
+  let totalInserted = 0;
+
+  try {
+    while (true) {
+      const query = encodeURIComponent(`select A,C,D,H limit ${FETCH_BATCH} offset ${offset}`);
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&tq=${query}`;
+      const res = await fetch(url);
+      if (!res.ok) break;
+      const text = await res.text();
+      const rows = text.split('\n').slice(1).filter(r => r.trim().length > 0);
+      if (!rows.length) break;
+
+      const records = [];
+      rows.forEach(row => {
+        const cols = row.match(/(".*?"|[^,]+)(?=,|$)/g) || row.split(',');
+        const clean = cols.map(c => c ? c.replace(/^"|"$/g, '').trim() : '');
+        const bulan = clean[0] || '';
+        const nomor = clean[1] || '';
+        const produk = clean[2] || '';
+        const ekspedisi = clean[3] || '';
+        if (nomor) records.push({ bulan, nomor_customer: nomor, produk, ekspedisi, tanggal_ditambahkan: now });
+      });
+
+      for (let i = 0; i < records.length; i += INSERT_BATCH) {
+        const chunk = records.slice(i, i + INSERT_BATCH);
+        try {
+          const inserted = await sbFetch(TABLE, { method: 'POST', body: JSON.stringify(chunk) });
+          totalInserted += inserted.length;
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 30));
+      }
+
+      if (rows.length < FETCH_BATCH) break;
+      offset += FETCH_BATCH;
+    }
+
+    localStorage.setItem('last_auto_sync', Date.now().toString());
+    await loadData();
+    const nextSync = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    showAutoSyncStatus(`✅ Auto-sync selesai! ${totalInserted.toLocaleString('id-ID')} data ditambahkan. Berikutnya: ${nextSync.toLocaleDateString('id-ID')}`);
+  } catch(e) {
+    showAutoSyncStatus('⚠️ Auto-sync gagal: ' + e.message);
+  }
+}
+
+function showAutoSyncStatus(msg) {
+  let bar = document.getElementById('auto-sync-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'auto-sync-bar';
+    bar.style.cssText = 'font-size:11px;color:var(--text3);background:var(--surface2);padding:5px 2rem;text-align:right;border-bottom:1px solid var(--border);';
+    const topBar = document.getElementById('app').querySelector('.top-bar');
+    topBar.insertAdjacentElement('afterend', bar);
+  }
+  bar.textContent = msg;
 }
 
 // Cek session saat halaman dimuat
